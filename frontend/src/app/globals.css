@@ -1,0 +1,31 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+body {
+  color: white;
+}
+
+/* Custom CSS */
+.bg-gradient {
+  background-image: url(/images/background.jpg);
+  background-size: cover;
+  background-repeat: no-repeat;
+  background-position: center;
+  background-attachment: fixed;
+}
+
+/* React Multi Carousel */
+.carousel-container {
+}
+
+.carousel-item {
+}
+
+.carousel-arrow-left:hover {
+  box-shadow: 5px 0 20px 8px rgba(0, 0, 0, 0.28);
+}
+
+.carousel-arrow-right:hover {
+  box-shadow: -5px 0 20px 8px rgba(0, 0, 0, 0.28);
+}

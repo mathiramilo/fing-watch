@@ -1,0 +1,8 @@
+export { default as Navbar } from './Navbar'
+export { default as Footer } from './Footer'
+export { default as IconButton } from './IconButton'
+export { default as SearchBar } from './SearchBar'
+export { default as MoviesSlider } from './MoviesSlider'
+export { default as GenresSlider } from './GenresSlider'
+export { default as MoviesGrid } from './MoviesGrid'
+export { default as CustomRating } from './CustomRating'
