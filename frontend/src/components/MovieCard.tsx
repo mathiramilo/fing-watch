@@ -17,7 +17,7 @@ export default function MovieCard({ movie }: MovieCardProps) {
   return (
     <Link
       href={`/movie/${movie.id}`}
-      className="aspect-[2/3] rounded-sm relative"
+      className="block group aspect-[2/3] rounded-sm relative overflow-hidden"
     >
       {/* Movie Poster */}
       <Image
@@ -25,11 +25,11 @@ export default function MovieCard({ movie }: MovieCardProps) {
         alt={movie.title}
         width={768}
         height={1024}
-        className="rounded-sm"
+        className="rounded-sm group-hover:scale-105 transition-transform duration-500"
       />
 
       {/* Movie Overlay (On Hover) */}
-      <div className="absolute top-0 left-0 w-full h-full p-5 rounded-sm bg-black/80 flex flex-col opacity-0 sm:hover:opacity-100 transition-opacity">
+      <div className="absolute top-0 left-0 w-full h-full p-5 rounded-sm bg-black/80 flex flex-col opacity-0 sm:hover:opacity-100 transition-opacity duration-200">
         <h3 className="font-bold mb-4 text-white/90">{movie.title}</h3>
         <p className="font-normal text-sm text-white/50 mb-5 line-clamp-6">{movie.overview}</p>
 

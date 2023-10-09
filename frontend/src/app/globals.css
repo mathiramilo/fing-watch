@@ -16,12 +16,6 @@ body {
 }
 
 /* React Multi Carousel */
-.carousel-container {
-}
-
-.carousel-item {
-}
-
 .carousel-arrow-left:hover {
   box-shadow: 5px 0 20px 8px rgba(0, 0, 0, 0.28);
 }
