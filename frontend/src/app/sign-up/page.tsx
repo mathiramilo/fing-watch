@@ -1,10 +1,32 @@
+'use client';
 import { AiOutlineGoogle } from 'react-icons/ai'
 import { Divider } from '@mui/material'
-
+import { useState } from 'react'
 import { Footer, IconButton } from '@/components'
 import Link from 'next/link'
 
 export default function SignUpPage() {
+  const [email, setEmail] = useState('')
+  const [password, setPassword] = useState('')
+
+  const signUp = async () => {
+    const requestOptions = {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        email: email,
+        password: password
+      })
+    };
+    await fetch('http://127.0.0.1:5000/api/auth/sign-up', requestOptions)
+      .then(response => response.json())
+      .then(data => { 
+       if (data.result && data.token != undefined && data.token != '') {
+        localStorage.setItem('token', data.token)
+       }
+      });
+  }
+
   return (
     <main className="w-[90%] mx-auto sm:w-full sm:px-12 pt-48">
       <h3 className="text-3xl font-bold text-center text-white/90 mb-16">Sign Up</h3>
@@ -29,11 +51,13 @@ export default function SignUpPage() {
             type="email"
             className="w-full bg-white/10 text-white/80 border border-white/0 px-4 py-3 rounded-md mb-4 focus:outline-none focus:border-white/10 placeholder:text-white/40 transition-colors"
             placeholder="Email address"
+            value={email} onChange={args => setEmail(args.target.value)}
           />
           <input
             type="password"
             className="w-full bg-white/10 text-white/80 border border-white/0 px-4 py-3 rounded-md mb-4 focus:outline-none focus:border-white/10 placeholder:text-white/40 transition-colors"
             placeholder="Password"
+            value={password} onChange={args => setPassword(args.target.value)}
           />
           <input
             type="password"
@@ -41,7 +65,7 @@ export default function SignUpPage() {
             placeholder="Repeat Password"
           />
 
-          <button className="bg-white/10 text-white/80 font-bold px-12 py-3 rounded-md hover:bg-white/20 hover:text-white transition-colors">
+          <button type='button' className="bg-white/10 text-white/80 font-bold px-12 py-3 rounded-md hover:bg-white/20 hover:text-white transition-colors" onClick={signUp}>
             Sign Up
           </button>
         </form>
