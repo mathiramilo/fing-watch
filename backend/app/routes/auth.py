@@ -30,7 +30,7 @@ def sign_in():
         email = content["email"]
         password = content["password"]
         token = login(email, password)
-        return { "token": token }, 200
+        return { "result": True, "token": token }, 200
     
     except IncorrectCredentials:
         return {"WWW-Authenticate": "Credenciales invalidas"}, 401

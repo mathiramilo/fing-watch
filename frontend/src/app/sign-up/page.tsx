@@ -3,6 +3,7 @@ import { AiOutlineGoogle } from 'react-icons/ai'
 import { Divider } from '@mui/material'
 import { useState } from 'react'
 import { Footer, IconButton } from '@/components'
+import { Login } from '@/app/services/authorization_state'
 import Link from 'next/link'
 
 export default function SignUpPage() {
@@ -10,21 +11,7 @@ export default function SignUpPage() {
   const [password, setPassword] = useState('')
 
   const signUp = async () => {
-    const requestOptions = {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        email: email,
-        password: password
-      })
-    };
-    await fetch('http://127.0.0.1:5000/api/auth/sign-up', requestOptions)
-      .then(response => response.json())
-      .then(data => { 
-       if (data.result && data.token != undefined && data.token != '') {
-        localStorage.setItem('token', data.token)
-       }
-      });
+    await Login(email, password)
   }
 
   return (

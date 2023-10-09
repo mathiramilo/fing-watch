@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react'
+import { API_SERVER_URL } from '@/config'
 
 // Component to validate authorization in a page
 // If not authorized, redirects to login
@@ -30,6 +31,42 @@ export function AuthorizationState() : User | null {
         return null
     }
     return authState
+}
+
+export async function Login(email: string, password: string) {
+    const requestOptions = {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+            email: email,
+            password: password
+        })
+    };
+    await fetch(`${API_SERVER_URL}/auth/sign-up`, requestOptions)
+        .then(response => response.json())
+        .then(data => { 
+            if (data.result && data.token != undefined && data.token != '') {
+                localStorage.setItem('token', data.token)
+            }
+        });
+}
+
+export async function Register(email: string, password: string) {
+    const requestOptions = {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+            email: email,
+            password: password
+        })
+    };
+      await fetch(`${API_SERVER_URL}/auth/sign-in`, requestOptions)
+        .then(response => response.json())
+        .then(data => { 
+            if (data.result && data.token != undefined && data.token != '') {
+                localStorage.setItem('token', data.token)
+            }
+        });
 }
 
 export function Logout() {
