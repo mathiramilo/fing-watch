@@ -1,10 +1,9 @@
 from  werkzeug.security import generate_password_hash
 
 class User:
-    def __init__(self, username, name, id = None):
+    def __init__(self, email, id = None):
         self.id = id
-        self.username = username
-        self.name = name
+        self.email = email
         self.password = None
     
     def setId(self, id):
@@ -16,8 +15,7 @@ class User:
     def toCollectionEntry(self):
         return {
             "id": self.id,
-            "username": self.username,
-            "name": self.name,
+            "email": self.email,
             "password": self.password
         }
         

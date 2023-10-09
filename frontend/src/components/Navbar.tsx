@@ -1,14 +1,12 @@
 'use client'
-
 import { useState, useEffect } from 'react'
-
 import Image from 'next/image'
 import Link from 'next/link'
-
 import { BiSearch } from 'react-icons/bi'
 import { RxHamburgerMenu } from 'react-icons/rx'
-
 import SideMenu from './SideMenu'
+import { AuthorizedView, NotAuthorizedView } from '@/app/services/authorized_view'
+import { AuthorizationState } from '@/app/services/authorization_state'
 
 export default function Navbar() {
   const [menuOpen, setMenuOpen] = useState(false)
@@ -80,18 +78,23 @@ export default function Navbar() {
                 className="text-white/80 hover:text-white transition-colors"
               />
             </Link>
-            <Link
-              href="/sign-in"
-              className="text-white/80 font-bold hover:text-white transition-colors"
-            >
-              Sign In
-            </Link>
-            <Link
-              href="/sign-up"
-              className="bg-white/20 text-white/80 font-bold px-6 py-2 rounded-sm hover:bg-white/30 hover:text-white transition-colors"
-            >
-              Sign Up
-            </Link>
+            <AuthorizedView>
+              {AuthorizationState()?.email}
+            </AuthorizedView>
+            <NotAuthorizedView>
+              <Link
+                href="/sign-in"
+                className="text-white/80 font-bold hover:text-white transition-colors"
+              >
+                Sign In
+              </Link>
+              <Link
+                href="/sign-up"
+                className="bg-white/20 text-white/80 font-bold px-6 py-2 rounded-sm hover:bg-white/30 hover:text-white transition-colors"
+              >
+                Sign Up
+              </Link>
+            </NotAuthorizedView>
           </div>
         </div>
       </section>

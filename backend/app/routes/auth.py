@@ -10,15 +10,15 @@ def sign_up():
     try:
         content = request.get_json()
         result = create_user(User(
-            username = content["username"],
-            name = content["name"]
+            email = content["email"]
         ), content["password"])
         if result.result:
             return { "result": True, "token": result.token }, 200
         
     except UserExists:
         return { "error": "Usuario ya registrado" }, 400
-    
+    except IncorrectCredentials:
+        return { "error": "Credenciales invalidas" }, 400
     except:
         traceback.print_exc()
         return { "error": "Algo salio mal" }, 500
@@ -27,14 +27,13 @@ def sign_up():
 def sign_in():
     try:
         content = request.get_json()
-        username = content["username"]
+        email = content["email"]
         password = content["password"]
-        token = login(username, password)
-        return { "token": token }, 200
+        token = login(email, password)
+        return { "result": True, "token": token }, 200
     
     except IncorrectCredentials:
-        return {"WWW-Authenticate": "incorrect credentials"}, 401
-    
+        return {"WWW-Authenticate": "Credenciales invalidas"}, 401
     except:
         traceback.print_exc()
         return { "error": "Algo salio mal" }, 500
