@@ -31,3 +31,13 @@ services:
     depends_on:
       - redis
       - mongo
+
+  data-refresh:
+    build:
+      context: ./data-refresh
+      dockerfile: Dockerfile
+    env_file:
+      - data-refresh/.env
+    depends_on:
+      - mongo
+      - gorse
