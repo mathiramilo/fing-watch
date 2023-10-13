@@ -4,3 +4,4 @@ jwt
 python-dotenv
 flask-cors
 requests
+uuid

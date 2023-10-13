@@ -1,2 +1,5 @@
 **/.env
 **/.vscode
+
+# Populate Gorse Script
+populate_gorse.py

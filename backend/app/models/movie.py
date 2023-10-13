@@ -3,7 +3,7 @@ import pymongo
 
 def get_movie(client: pymongo.MongoClient, tmdb_id: int):
     col = client.get_database("data").get_collection("movies")
-    result = col.find_one({"id": tmdb_id})
+    result = col.find_one({"tmdb_id": tmdb_id})
 
     if result:
         # remove mongodb _id field
