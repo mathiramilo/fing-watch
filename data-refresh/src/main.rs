@@ -89,10 +89,9 @@ async fn add_to_system(
     movie: &Movie,
 ) -> mongodb::error::Result<()> {
     let opts = options::UpdateOptions::builder().upsert(true).build();
-    let query = doc! {"movie_id": movie.id};
+    let query = doc! {"tmdb_id": movie.id};
 
     let update = doc! {"$set": {
-       "id": &movie.id,
        "title": &movie.title,
        "overview": &movie.overview,
        "genres": &movie.map_genres(),
