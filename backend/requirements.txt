@@ -1,3 +1,6 @@
 flask
 flask-pymongo
-dotenv
+jwt
+python-dotenv
+flask-cors
+requests

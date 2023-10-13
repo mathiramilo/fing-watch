@@ -1,49 +1,55 @@
 from flask import Blueprint
 from flask import request
+from ..models import movie
+import pymongo
+import requests
+from ..utils.constants import GORSE_API, MONGO_URI
+
 
 movies = Blueprint("movies", __name__)
 
 
-def get_args():
-    n = request.args.get("n", default=10)
-    offset = request.args.get("offset", default=0)
-    user_id = request.args.get("user-id", default=None)
-    return n, offset, user_id
+def process_request(endpoint):
+    parms = {parm: request.args.get(parm) for parm in request.args}
 
+    resp = requests.get(GORSE_API + endpoint, params=parms)
+    if not resp.ok:
+        return {"message": "Error"}, 404  # TODO: ???
 
-@movies.get("/")
-def get_movies():
-    result = {"message": "Enjoy the movies!"}
+    # get movies id from gorse
+    movies_ids = [item["Id"] for item in resp.json()]
+
+    with pymongo.MongoClient(MONGO_URI) as client:
+        result = movie.get_movies(client, movies_ids)
+
     return result, 200
 
 
 @movies.get("/popular")
 def get_popular():
-    n, offset, user_id = get_args()
-
-    result = {"message": f"Enjoy the popular movies {n} {offset} {user_id}!"}
-    return result, 200
+    return process_request("/popular")
 
 
 @movies.get("/popular/<genre>")
 def get_popular_by_genre(genre):
-    n, offset, user_id = get_args()
-
-    result = {"message": f"Enjoy the movies popular {genre} movies!"}
-    return result, 200
+    return process_request(f"/popular/{genre}")
 
 
 @movies.get("/latest")
 def get_latest():
-    n, offset, user_id = get_args()
-
-    result = {"message": "Enjoy the latest movies!"}
-    return result, 200
+    return process_request("/latest")
 
 
 @movies.get("/latest/<genre>")
 def get_latest_by_genre(genre):
-    n, offset, user_id = get_args()
+    return process_request(f"/latest/{genre}")
 
-    result = {"message": f"Enjoy the latest {genre} movies!"}
-    return result, 200
+
+@movies.get("/neighbors/<tmdb_id>")
+def get_neighbors(tmdb_id):
+    return process_request(f"/item/{tmdb_id}/neighbors")
+
+
+@movies.get("/neighbors/<tmdb_id>/<genre>")
+def get_neighbors_by_genre(tmdb_id, genre):
+    return process_request(f"/item/{tmdb_id}/neighbors/{genre}")
