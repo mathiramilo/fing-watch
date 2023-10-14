@@ -3,6 +3,7 @@ import { Lato } from 'next/font/google'
 
 import './globals.css'
 
+import Providers from '@/providers'
 import { Navbar } from '@/components'
 
 const lato = Lato({ weight: ['100', '300', '400', '700', '900'], subsets: ['latin'] })
@@ -16,8 +17,10 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
   return (
     <html lang="en">
       <body className={`${lato.className} bg-gradient overflow-x-hidden`}>
-        <Navbar />
-        {children}
+        <Providers>
+          <Navbar />
+          {children}
+        </Providers>
       </body>
     </html>
   )

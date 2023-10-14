@@ -4,19 +4,52 @@ import { useState } from 'react'
 import Link from 'next/link'
 
 import { AiOutlineGoogle } from 'react-icons/ai'
-
+import { BiError } from 'react-icons/bi'
 import { Divider } from '@mui/material'
 
-import { Register } from '@/services/authorization_state'
+import { useAuth } from '@/hooks/useAuth'
+import { signIn } from '@/services/auth'
 
 import { Footer, IconButton } from '@/components'
 
 export default function SignInPage() {
-  const [email, setEmail] = useState('')
-  const [password, setPassword] = useState('')
+  const { setUser, setToken } = useAuth()
 
-  const signIn = async () => {
-    await Register(email, password)
+  const [loading, setLoading] = useState(false)
+  const [error, setError] = useState('')
+
+  const handleSignIn = async (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault()
+
+    const formData = new FormData(e.currentTarget)
+    const payload = {
+      email: formData.get('email') as string,
+      password: formData.get('password') as string
+    }
+
+    if (!payload.email || !payload.password) {
+      setError('Please fill in all fields')
+      setTimeout(() => setError(''), 10000)
+      return
+    }
+
+    try {
+      setLoading(true)
+
+      const data = await signIn(payload.email, payload.password)
+
+      if (data) {
+        const { user: signedInUser, token } = data
+
+        setUser(signedInUser)
+        setToken(token)
+      }
+    } catch (error) {
+      setError((error as Error).message as string)
+      setTimeout(() => setError(''), 10000)
+    } finally {
+      setLoading(false)
+    }
   }
 
   return (
@@ -24,7 +57,7 @@ export default function SignInPage() {
       <h3 className="text-3xl font-bold text-center text-white/90 mb-16">Sign In</h3>
 
       <section className="w-full max-w-4xl mx-auto bg-black/40 backdrop-blur-3xl p-10 rounded-md mb-20">
-        <p className="text-white/80 mb-8">¿Tienes una cuenta de FingWatch?</p>
+        <p className="text-white/80 mb-8">Do you have a FingWatch account?</p>
 
         {/* Sign In with Google */}
         <IconButton
@@ -38,40 +71,52 @@ export default function SignInPage() {
         <span className="block text-xs text-center text-white/50 mb-4">OR</span>
 
         {/* Sign In with Email and Password */}
-        <form className="mb-8">
+        <form
+          className="mb-8"
+          onSubmit={handleSignIn}
+        >
           <input
             type="email"
+            name="email"
             className="w-full bg-white/10 text-white/80 border border-white/0 px-4 py-3 rounded-md mb-4 focus:outline-none focus:border-white/10 placeholder:text-white/40 transition-colors"
             placeholder="Email address"
-            value={email}
-            onChange={(args) => setEmail(args.target.value)}
           />
           <input
             type="password"
+            name="password"
             className="w-full bg-white/10 text-white/80 border border-white/0 px-4 py-3 rounded-md mb-6 focus:outline-none focus:border-white/10 placeholder:text-white/40 transition-colors"
             placeholder="Password"
-            value={password}
-            onChange={(args) => setPassword(args.target.value)}
           />
 
+          {/* Error */}
+          {error && (
+            <div className="w-full flex items-center gap-2 border border-red-600/60 rounded-md p-3 mb-6">
+              <BiError
+                size={20}
+                className="text-red-600"
+              />
+              <span className="text-red-600">{error}</span>
+            </div>
+          )}
+
           <button
-            type="button"
+            type="submit"
+            disabled={loading}
             className="bg-white/10 text-white/80 font-bold px-12 py-3 rounded-md hover:bg-white/20 hover:text-white transition-colors"
-            onClick={() => signIn()}
           >
-            Sign In
+            {loading ? 'Signing In...' : 'Sign In'}
           </button>
         </form>
 
         <Divider color="#3b3b3b" />
 
         <div className="flex items-center gap-4 mt-8">
-          <p className="text-white/80">¿Aún no tienes una cuenta?</p>
+          <p className="text-white/80">Don&apos;t have an account yet?</p>
           <Link
             href="/sign-up"
             className="text-white/80 hover:text-white transition-colors"
           >
-            Crear cuenta
+            Create Account
           </Link>
         </div>
       </section>
