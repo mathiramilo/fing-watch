@@ -7,13 +7,15 @@ import { MoviesListItem } from '@/types'
 
 import { GenresSlider, MoviesSlider, Footer } from '@/components'
 
-export default function Home() {
+export default function Genre({ params }: { params: { slug: string } }) {
   const [trendingMovies, setTrendingMovies] = useState<MoviesListItem[]>([])
   const [popularMovies, setPopularMovies] = useState<MoviesListItem[]>([])
   const [topRatedMovies, setTopRatedMovies] = useState<MoviesListItem[]>([])
 
+  const genre = params.slug
+
   const getTrendingMovies = async () => {
-    const url = SERVER_API_URL + '/movies/latest?n=18'
+    const url = SERVER_API_URL + `/movies/latest/${genre}?n=18`
 
     const options = {
       method: 'GET',
@@ -29,7 +31,7 @@ export default function Home() {
   }
 
   const getPopularMovies = async () => {
-    const url = SERVER_API_URL + '/movies/popular?n=18'
+    const url = SERVER_API_URL + `/movies/popular/${genre}?n=18`
 
     const options = {
       method: 'GET',
@@ -46,7 +48,7 @@ export default function Home() {
   }
 
   const getTopRatedMovies = async () => {
-    const url = SERVER_API_URL + '/movies/neighbors/575264?n=18'
+    const url = SERVER_API_URL + `/movies/neighbors/575264/${genre}?n=18`
     const options = {
       method: 'GET',
       headers: {
@@ -65,7 +67,7 @@ export default function Home() {
     getTrendingMovies()
     getPopularMovies()
     getTopRatedMovies()
-  }, [])
+  }, [genre]) // eslint-disable-line react-hooks/exhaustive-deps
 
   return (
     <main className="w-[90%] mx-auto sm:w-full sm:px-12 pt-32">

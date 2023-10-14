@@ -1,42 +1,50 @@
+'use client'
+
+import Link from 'next/link'
+import { useEffect, useState } from 'react'
+
+import { SERVER_API_URL } from '@/config'
+
 import CustomCarousel from './CustomCarousel'
 
 export default function GenresSlider() {
+  const [categories, setCategories] = useState<string[]>([])
+
+  const getCategories = async () => {
+    const url = SERVER_API_URL + '/categories'
+
+    const options = {
+      method: 'GET',
+      headers: {
+        accept: 'application/json'
+      }
+    }
+
+    const res = await fetch(url, options)
+    const data = await res.json()
+
+    setCategories(data as string[])
+  }
+
+  useEffect(() => {
+    getCategories()
+  }, [])
+
   return (
     <CustomCarousel responsive={responsive}>
-      {genres.map((genre) => (
-        <button
+      {categories.map((genre) => (
+        <Link
           key={genre}
-          className="h-48 aspect-square bg-white/10 border border-stone-700 rounded-md hover:bg-white/20 hover:text-white hover:border-stone-600 transition-colors"
+          href={`/genres/${genre}`}
         >
-          <h3 className="font-bold text-lg text-white/80">{genre}</h3>
-        </button>
+          <button className="h-48 aspect-square bg-white/10 border border-stone-700 rounded-md hover:bg-white/20 hover:text-white hover:border-stone-600 transition-colors">
+            <h3 className="font-bold text-lg text-white/80">{genre}</h3>
+          </button>
+        </Link>
       ))}
     </CustomCarousel>
   )
 }
-
-// Example genres
-const genres = [
-  'Action',
-  'Comedy',
-  'Drama',
-  'Horror',
-  'Mystery',
-  'Romance',
-  'Thriller',
-  'Sci-Fi',
-  'Fantasy',
-  'Animation',
-  'Crime',
-  'Adventure',
-  'Family',
-  'History',
-  'War',
-  'Music',
-  'Documentary',
-  'Western',
-  'TV Movie'
-]
 
 const responsive = {
   xxxxl: {
