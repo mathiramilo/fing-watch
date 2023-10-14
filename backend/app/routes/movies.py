@@ -1,9 +1,9 @@
 from flask import Blueprint
 from flask import request
 from ..models import movie
-import pymongo
 import requests
-from ..utils.constants import GORSE_API, MONGO_URI
+from ..utils.constants import GORSE_API
+import os
 
 
 movies = Blueprint("movies", __name__)
@@ -19,8 +19,7 @@ def process_request(endpoint):
     # get movies id from gorse
     movies_ids = [item["Id"] for item in resp.json()]
 
-    with pymongo.MongoClient(MONGO_URI) as client:
-        result = movie.get_movies(client, movies_ids)
+    result = movie.get_movies(movies_ids)
 
     return result, 200
 
@@ -53,3 +52,25 @@ def get_neighbors(tmdb_id):
 @movies.get("/neighbors/<tmdb_id>/<genre>")
 def get_neighbors_by_genre(tmdb_id, genre):
     return process_request(f"/item/{tmdb_id}/neighbors/{genre}")
+
+
+@movies.get("/")
+def query():
+    url = os.environ["TYPESENSE"] + "/collections/movies/documents/search"
+    query = {
+        "q": request.args.get("q"),
+        "query_by": "title",
+        "prioritize_token_position": "true",
+        "sort_by": "popularity:desc",
+        "exclude_fields": "watch_providers",
+    }
+    headers = {"X-TYPESENSE-API-KEY": os.environ["TYPESENSE_KEY"]}
+    resp = requests.get(url, params=query, headers=headers)
+
+    return resp.content, resp.status_code
+
+
+@movies.get("/<tmdb_id>")
+def get_movie(tmdb_id):
+    content = movie.get_movie_info(tmdb_id)
+    return content, 200

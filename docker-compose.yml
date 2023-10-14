@@ -39,5 +39,20 @@ services:
     env_file:
       - data-refresh/.env
     depends_on:
-      - mongo
+      - typesense
       - gorse
+
+  typesense:
+    image: typesense/typesense:0.25.1
+    ports:
+      - "8108:8108"
+    environment:
+      TYPESENSE_API_KEY: xyz
+      TYPESENSE_DATA_DIR: /data/typesense
+      TYPESENSE_ENABLE_CORS: "true"
+    volumes:
+      - typesense:/data/typesense
+
+volumes:
+  typesense:
+    driver: local
