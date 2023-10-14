@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from 'react'
 
-import { ENV, SERVER_API_URL } from '@/config'
+import { SERVER_API_URL } from '@/config'
 import { MoviesListItem } from '@/types'
 
 import { GenresSlider, MoviesSlider, Footer } from '@/components'
@@ -13,7 +13,7 @@ export default function Home() {
   const [topRatedMovies, setTopRatedMovies] = useState<MoviesListItem[]>([])
 
   const getTrendingMovies = async () => {
-    const url = SERVER_API_URL + '/movies/latest?n=18'
+    const url = SERVER_API_URL + '/movies/neighbors/299536?n=18'
 
     const options = {
       method: 'GET',
@@ -34,8 +34,7 @@ export default function Home() {
     const options = {
       method: 'GET',
       headers: {
-        accept: 'application/json',
-        Authorization: `Bearer ${ENV.TMDB_API_KEY}`
+        accept: 'application/json'
       }
     }
 
@@ -50,8 +49,7 @@ export default function Home() {
     const options = {
       method: 'GET',
       headers: {
-        accept: 'application/json',
-        Authorization: `Bearer ${ENV.TMDB_API_KEY}`
+        accept: 'application/json'
       }
     }
 

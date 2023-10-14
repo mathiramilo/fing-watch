@@ -5,7 +5,7 @@ import Image from 'next/image'
 
 import { AiOutlineHeart } from 'react-icons/ai'
 
-import { ENV } from '@/config'
+import { ENV, SERVER_API_URL } from '@/config'
 import { MovieDetails, MovieProviders } from '@/types'
 import { getMovieAge, getMovieDuration, getMovieYear, getMovieImageUrl } from '@/utils/movies'
 
@@ -51,20 +51,19 @@ export default function MoviePage({ params }: { params: { id: string } }) {
   }
 
   const getSimilarMovies = async () => {
-    const url = `https://api.themoviedb.org/3/movie/${params.id}/recommendations`
+    const url = SERVER_API_URL + `/movies/neighbors/${params.id}`
 
     const options = {
       method: 'GET',
       headers: {
-        accept: 'application/json',
-        Authorization: `Bearer ${ENV.TMDB_API_KEY}`
+        accept: 'application/json'
       }
     }
 
     const res = await fetch(url, options)
     const data = await res.json()
 
-    setSimilar(data.results as MovieDetails[])
+    setSimilar(data as MovieDetails[])
   }
 
   useEffect(() => {
@@ -88,8 +87,8 @@ export default function MoviePage({ params }: { params: { id: string } }) {
         <Image
           src={getMovieImageUrl(movie?.backdrop_path!)}
           alt={movie?.title!}
-          width={1200}
-          height={1200}
+          width={1600}
+          height={1600}
           className="w-full h-full absolute top-0 left-0 z-0 object-cover"
         />
 

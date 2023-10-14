@@ -25,3 +25,16 @@ export const formatGenre = (str: string) => {
 
   return str.charAt(0).toUpperCase() + str.slice(1)
 }
+
+export const prettifyGenre = (str: string) => {
+  if (str.includes('%20')) {
+    const words = str.split('%20')
+    const formatted = words.map((word) => {
+      return word.charAt(0).toUpperCase() + word.slice(1)
+    })
+
+    return formatted.join(' ')
+  }
+
+  return str.charAt(0).toUpperCase() + str.slice(1)
+}

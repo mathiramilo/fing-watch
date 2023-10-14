@@ -2,10 +2,11 @@
 
 import { useState, useEffect } from 'react'
 
-import { ENV, SERVER_API_URL } from '@/config'
+import { SERVER_API_URL } from '@/config'
 import { MoviesListItem } from '@/types'
+import { prettifyGenre } from '@/utils/movies'
 
-import { GenresSlider, MoviesSlider, Footer } from '@/components'
+import { MoviesSlider, Footer } from '@/components'
 
 export default function Genre({ params }: { params: { slug: string } }) {
   const [trendingMovies, setTrendingMovies] = useState<MoviesListItem[]>([])
@@ -36,8 +37,7 @@ export default function Genre({ params }: { params: { slug: string } }) {
     const options = {
       method: 'GET',
       headers: {
-        accept: 'application/json',
-        Authorization: `Bearer ${ENV.TMDB_API_KEY}`
+        accept: 'application/json'
       }
     }
 
@@ -52,8 +52,7 @@ export default function Genre({ params }: { params: { slug: string } }) {
     const options = {
       method: 'GET',
       headers: {
-        accept: 'application/json',
-        Authorization: `Bearer ${ENV.TMDB_API_KEY}`
+        accept: 'application/json'
       }
     }
 
@@ -70,8 +69,8 @@ export default function Genre({ params }: { params: { slug: string } }) {
   }, [genre]) // eslint-disable-line react-hooks/exhaustive-deps
 
   return (
-    <main className="w-[90%] mx-auto sm:w-full sm:px-12 pt-32">
-      <GenresSlider />
+    <main className="w-[90%] mx-auto sm:w-full sm:px-12 pt-[4.2em]">
+      <h1 className="text-lg font-bold text-white/50 text-center mb-16">{prettifyGenre(genre)}</h1>
       <MoviesSlider
         title="Recommended for You"
         movies={trendingMovies}

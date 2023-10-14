@@ -16,8 +16,8 @@ interface MovieCardProps {
 export default function MovieCard({ movie }: MovieCardProps) {
   return (
     <Link
-      href={`/movie/${movie.id}`}
-      className="block group aspect-[2/3] rounded-sm relative overflow-hidden"
+      href={`/movie/${movie.tmdb_id || movie.id}`}
+      className="block group aspect-[2/3] bg-neutral-800 rounded-sm relative overflow-hidden"
     >
       {/* Movie Poster */}
       <Image

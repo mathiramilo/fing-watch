@@ -3,6 +3,7 @@ export interface MoviesListItem {
   backdrop_path: string
   genre_ids: number[]
   id: number
+  tmdb_id: string
   original_language: string
   original_title: string
   overview: string
@@ -23,7 +24,7 @@ export interface MovieDetails {
   genres: object[]
   homepage: string
   id: number
-  imdb_id: string
+  tmdb_id: string
   original_language: string
   original_title: string
   overview: string
