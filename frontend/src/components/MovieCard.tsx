@@ -36,7 +36,7 @@ export default function MovieCard({ movie }: MovieCardProps) {
         {/* Add to my List */}
         <IconButton
           Icon={AiOutlineHeart}
-          text="Agregar a mi Lista"
+          text="Add to Watchlist"
           iconSize={22}
           textSize="sm"
           className="mb-5"
@@ -44,17 +44,17 @@ export default function MovieCard({ movie }: MovieCardProps) {
 
         {/* Like/Dislike */}
         <div className="flex flex-col gap-3">
-          <p className="text-sm text-white/60">¿Cómo calificarias esta película?</p>
+          <p className="text-sm text-white/60">How would you rate this movie?</p>
           <div className="flex items-center gap-4">
             <IconButton
               Icon={AiOutlineLike}
-              text="Me Gusta"
+              text="Like"
               iconSize={20}
               textSize="sm"
             />
             <IconButton
               Icon={AiOutlineDislike}
-              text="No Me Gusta"
+              text="Dislike"
               iconSize={20}
               textSize="sm"
             />

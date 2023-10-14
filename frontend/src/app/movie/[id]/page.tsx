@@ -51,7 +51,7 @@ export default function MoviePage({ params }: { params: { id: string } }) {
   }
 
   const getSimilarMovies = async () => {
-    const url = SERVER_API_URL + `/movies/neighbors/${params.id}`
+    const url = SERVER_API_URL + `/movies/neighbors/${params.id}?n=18`
 
     const options = {
       method: 'GET',
@@ -89,7 +89,7 @@ export default function MoviePage({ params }: { params: { id: string } }) {
           alt={movie?.title!}
           width={1600}
           height={1600}
-          className="w-full h-full absolute top-0 left-0 z-0 object-cover"
+          className="w-full h-full absolute top-0 left-0 z-0 object-cover object-top"
         />
 
         {/* Movie Details */}
@@ -137,7 +137,7 @@ export default function MoviePage({ params }: { params: { id: string } }) {
 
           <IconButton
             Icon={AiOutlineHeart}
-            text="Agregar a mi Lista"
+            text="Add to Watchlist"
             iconSize={22}
             textSize="sm"
             className="mb-8"
