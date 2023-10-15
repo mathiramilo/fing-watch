@@ -85,7 +85,7 @@ async fn typesense_init(recreate: bool) -> Result<(), Error> {
     }
 
     // create 'movies' collection
-    let data = fs::read_to_string("movies-schema.json").expect("Unable to read file.");
+    let data = fs::read_to_string("schema/movies.json").expect("Unable to read file.");
     let json_payload: serde_json::Value = serde_json::from_str(&data).expect("Unable to parse.");
 
     reqwest::Client::new()

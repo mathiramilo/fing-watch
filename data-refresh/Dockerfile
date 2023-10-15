@@ -16,6 +16,7 @@ RUN apt-get update \
     && apt-get install -y ca-certificates \
     && rm -rf /var/lib/apt/lists/*
 
+COPY /schema ./schema
 COPY --from=builder /app/target/release/data-refresh ./data-refresh
 
 CMD ["./data-refresh"]
