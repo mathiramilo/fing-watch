@@ -4,19 +4,19 @@ import Link from 'next/link'
 import { AiOutlineHeart, AiOutlineLike, AiOutlineDislike } from 'react-icons/ai'
 
 import { getMovieImageUrl } from '@/utils/movies'
-import { MovieDetails, MoviesListItem } from '@/types'
+import { IMovieDetails, IMoviesListItem } from '@/types'
 
 import CustomRating from '@/components/CustomRating'
 import IconButton from '@/components/IconButton'
 
 interface MovieCardProps {
-  movie: MoviesListItem | MovieDetails
+  movie: IMoviesListItem | IMovieDetails
 }
 
 export default function MovieCard({ movie }: MovieCardProps) {
   return (
     <Link
-      href={`/movie/${movie.tmdb_id || movie.id}`}
+      href={`/movie/${movie.id}`}
       className="block group aspect-[2/3] bg-neutral-800 rounded-sm relative overflow-hidden"
     >
       {/* Movie Poster */}

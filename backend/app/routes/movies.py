@@ -1,10 +1,10 @@
-from flask import Blueprint
-from flask import request
-from ..models import movie
-import requests
-from ..utils.constants import GORSE_API
 import os
 
+import requests
+from flask import Blueprint, request
+
+from ..models import movie
+from ..utils.constants import GORSE_API
 
 movies = Blueprint("movies", __name__)
 
@@ -59,6 +59,7 @@ def query():
     url = os.environ["TYPESENSE"] + "/collections/movies/documents/search"
     query = {
         "q": request.args.get("q"),
+        "per_page": request.args.get("per_page", 10),
         "query_by": "title",
         "prioritize_token_position": "true",
         "sort_by": "popularity:desc",
@@ -72,5 +73,5 @@ def query():
 
 @movies.get("/<tmdb_id>")
 def get_movie(tmdb_id):
-    content = movie.get_movie_info(tmdb_id)
+    content = movie.get_movie_info(tmdb_id, all_fields=True)
     return content, 200

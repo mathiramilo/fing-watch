@@ -3,14 +3,14 @@
 import { useState, useEffect } from 'react'
 
 import { SERVER_API_URL } from '@/config'
-import { MoviesListItem } from '@/types'
+import { IMoviesListItem } from '@/types'
 
 import { GenresSlider, MoviesSlider, Footer } from '@/components'
 
 export default function Home() {
-  const [trendingMovies, setTrendingMovies] = useState<MoviesListItem[]>([])
-  const [popularMovies, setPopularMovies] = useState<MoviesListItem[]>([])
-  const [topRatedMovies, setTopRatedMovies] = useState<MoviesListItem[]>([])
+  const [trendingMovies, setTrendingMovies] = useState<IMoviesListItem[]>([])
+  const [popularMovies, setPopularMovies] = useState<IMoviesListItem[]>([])
+  const [topRatedMovies, setTopRatedMovies] = useState<IMoviesListItem[]>([])
 
   const getTrendingMovies = async () => {
     const url = SERVER_API_URL + '/movies/neighbors/299536?n=18'
@@ -25,7 +25,7 @@ export default function Home() {
     const res = await fetch(url, options)
     const data = await res.json()
 
-    setTrendingMovies(data as MoviesListItem[])
+    setTrendingMovies(data as IMoviesListItem[])
   }
 
   const getPopularMovies = async () => {
@@ -41,7 +41,7 @@ export default function Home() {
     const res = await fetch(url, options)
     const data = await res.json()
 
-    setPopularMovies(data as MoviesListItem[])
+    setPopularMovies(data as IMoviesListItem[])
   }
 
   const getTopRatedMovies = async () => {
@@ -56,7 +56,7 @@ export default function Home() {
     const res = await fetch(url, options)
     const data = await res.json()
 
-    setTopRatedMovies(data as MoviesListItem[])
+    setTopRatedMovies(data as IMoviesListItem[])
   }
 
   useEffect(() => {

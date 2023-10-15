@@ -2,14 +2,14 @@
 
 import { useEffect, useState } from 'react'
 
-import { ENV, SERVER_API_URL, TMDB_API_URL } from '@/config'
-import { MoviesListItem } from '@/types'
+import { SERVER_API_URL } from '@/config'
+import { IMoviesListItem, ISearchResults } from '@/types'
 
 import { Footer, GenresSlider, MoviesGrid, SearchBar } from '@/components'
 
 export default function SearchPage() {
-  const [searchResults, setSearchResults] = useState<MoviesListItem[] | null>(null)
-  const [trendingSearches, setTrendingSearches] = useState<MoviesListItem[]>([])
+  const [searchResults, setSearchResults] = useState<IMoviesListItem[] | null>(null)
+  const [trendingSearches, setTrendingSearches] = useState<IMoviesListItem[]>([])
 
   const handleSearch = (value: string) => {
     if (value !== '') {
@@ -21,20 +21,21 @@ export default function SearchPage() {
 
   const fetchSearchResults = async (inputValue: string) => {
     try {
-      const url = TMDB_API_URL + '/search/movie?query=' + inputValue
+      const url = SERVER_API_URL + '/movies?per_page=18&q=' + inputValue
 
       const options = {
         method: 'GET',
         headers: {
-          accept: 'application/json',
-          Authorization: `Bearer ${ENV.TMDB_API_KEY}`
+          accept: 'application/json'
         }
       }
 
       const res = await fetch(url, options)
-      const data = await res.json()
+      const data: ISearchResults = await res.json()
 
-      setSearchResults(data.results as MoviesListItem[])
+      const hits: IMoviesListItem[] = data.hits.map((hit) => hit.document)
+
+      setSearchResults(hits)
     } catch (error) {
       console.log(error)
     }
@@ -53,7 +54,7 @@ export default function SearchPage() {
     const res = await fetch(url, options)
     const data = await res.json()
 
-    setTrendingSearches(data as MoviesListItem[])
+    setTrendingSearches(data as IMoviesListItem[])
   }
 
   useEffect(() => {

@@ -1,11 +1,11 @@
-import { MovieDetails, MoviesListItem } from '@/types'
+import { IMovieDetails, IMoviesListItem } from '@/types'
 
 import CustomCarousel from './CustomCarousel'
 import MovieCard from './MovieCard'
 
 interface MoviesSliderProps {
   title: string
-  movies: MoviesListItem[] | MovieDetails[]
+  movies: IMoviesListItem[] | IMovieDetails[]
   className?: string
 }
 

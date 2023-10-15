@@ -1,9 +1,9 @@
-import { MovieDetails, MoviesListItem } from '@/types'
+import { IMovieDetails, IMoviesListItem } from '@/types'
 
 import MovieCard from '@/components/MovieCard'
 
 interface MoviesGridProps {
-  movies: MoviesListItem[] | MovieDetails[]
+  movies: IMoviesListItem[] | IMovieDetails[]
 }
 
 export default function MoviesGrid({ movies }: MoviesGridProps) {
