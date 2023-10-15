@@ -69,6 +69,29 @@ async fn gorse_post(movie: &Movie) -> Result<(), Error> {
     Ok(())
 }
 
+async fn wait_for_typesense(interval: Duration, timeout: Duration) {
+    let typesense = std::env::var("TYPESENSE").unwrap();
+    let key: String = std::env::var("TYPESENSE_KEY").unwrap();
+
+    loop {
+        let resp = reqwest::Client::new()
+            .get(typesense.to_owned() + "/health")
+            .header(header::CONTENT_TYPE, "application/json")
+            .timeout(timeout)
+            .header("X-TYPESENSE-API-KEY", &key)
+            .send()
+            .await;
+
+        if resp.is_ok_and(|resp| resp.status().is_success()) {
+            eprintln!("Typesense is ready!");
+            return;
+        }
+
+        eprintln!("Error while checking Typesense health.");
+        thread::sleep(interval);
+    }
+}
+
 async fn typesense_init(recreate: bool) -> Result<(), Error> {
     use std::fs;
     let typesense = std::env::var("TYPESENSE").unwrap();
@@ -76,25 +99,27 @@ async fn typesense_init(recreate: bool) -> Result<(), Error> {
 
     if recreate {
         // delete 'movies' collection
-        reqwest::Client::new()
+        let resp = reqwest::Client::new()
             .delete(typesense.to_owned() + "/collections/movies")
             .header(header::CONTENT_TYPE, "application/json")
             .header("X-TYPESENSE-API-KEY", &key)
             .send()
             .await?;
+        println!("DELETING MOVIES COLLECTION ({})", resp.status());
     }
 
     // create 'movies' collection
     let data = fs::read_to_string("schema/movies.json").expect("Unable to read file.");
     let json_payload: serde_json::Value = serde_json::from_str(&data).expect("Unable to parse.");
 
-    reqwest::Client::new()
+    let resp = reqwest::Client::new()
         .post(typesense.to_owned() + "/collections")
         .header(header::CONTENT_TYPE, "application/json")
         .header("X-TYPESENSE-API-KEY", &key)
         .body(json_payload.to_string())
         .send()
         .await?;
+    println!("CREATING MOVIES COLLECTION ({})", resp.status());
 
     Ok(())
 }
@@ -157,7 +182,9 @@ async fn fetch_movies_data(page: u32) -> Result<Vec<Movie>, Error> {
 async fn main() -> Result<(), Error> {
     dotenv().ok();
 
-    typesense_init(false).await?;
+    wait_for_typesense(Duration::from_secs(1), Duration::from_secs(1)).await;
+
+    typesense_init(true).await?;
 
     // 1 request every 3 seconds
     let mut pagging = Config::new(1440, Duration::from_secs(3));
