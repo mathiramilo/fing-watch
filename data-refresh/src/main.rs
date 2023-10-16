@@ -1,27 +1,15 @@
 pub mod gorse;
 pub mod tmdb;
 
-use gorse::Item;
-use tmdb::{KeywordsResponse, Movie, MoviesResponse};
-
-use mongodb::{
-    bson::doc,
-    bson::Document,
-    options,
-    options::{ClientOptions, ServerApi, ServerApiVersion},
-    Client,
-};
-use reqwest::{self, Error};
-use reqwest::{header, Response};
-
-use serde_json;
-
 use dotenv::dotenv;
+use gorse::Item;
+use reqwest::{header, Error};
 use std::thread;
 use std::time::Duration;
+use tmdb::{Movie, MovieDetails, MoviesResponse};
 
 async fn fetch_movies(page: u32, token: &str) -> Result<MoviesResponse, Error> {
-    let response = reqwest::Client::new()
+    let resp = reqwest::Client::new()
         .get("https://api.themoviedb.org/3/movie/popular")
         .query(&[("page", page)])
         .bearer_auth(token)
@@ -32,94 +20,122 @@ async fn fetch_movies(page: u32, token: &str) -> Result<MoviesResponse, Error> {
         .send()
         .await?;
 
-    response.error_for_status_ref()?;
+    resp.error_for_status_ref()?;
 
-    let data = response.json().await?;
+    let data = resp.json().await?;
 
     Ok(data)
 }
 
-async fn fetch_keywords(id: u32, token: &str) -> Result<KeywordsResponse, Error> {
-    let response = reqwest::Client::new()
-        .get(format!(
-            "https://api.themoviedb.org/3/movie/{}/keywords",
-            id
-        ))
+async fn fetch_details(id: u32, token: &str) -> Result<MovieDetails, Error> {
+    let resp = reqwest::Client::new()
+        .get(format!("https://api.themoviedb.org/3/movie/{}", id))
         .bearer_auth(token)
         .header(
             header::ACCEPT,
             header::HeaderValue::from_static("application/json"),
         )
+        .query(&[("append_to_response", "keywords,watch/providers")])
         .send()
         .await?;
 
-    response.error_for_status_ref()?;
+    resp.error_for_status_ref()?;
 
-    let data = response.json().await?;
+    let data = resp.json().await?;
 
     Ok(data)
 }
 
-async fn gorse_post(entry_point: &str, movie: &Movie) -> Result<Response, Error> {
+async fn gorse_post(movie: &Movie) -> Result<(), Error> {
+    let entry_point = std::env::var("GORSE_ENTRY_POINT").expect("GORSE_ENTRY_POINT must be set.");
+
     let item = Item {
         id: movie.id.to_string(),
         hidden: false,
-        categories: movie.map_genres(),
+        categories: movie.genre_ids.iter().map(|g| g.to_string()).collect(),
         timestamp: movie.release_date.clone(),
         labels: movie.keywords.iter().map(|k| k.name.clone()).collect(),
         comment: movie.title.clone(),
     };
 
-    let json_payload = serde_json::to_string(&item).unwrap();
-
-    let response = reqwest::Client::new()
+    reqwest::Client::new()
         .post(format!("{}/api/item", entry_point))
         .header(header::CONTENT_TYPE, "application/json")
         .header("X-API-Key", "")
-        .body(json_payload)
+        .json(&item)
         .send()
         .await?;
 
-    Ok(response)
+    Ok(())
 }
 
-async fn add_to_system(
-    mongo_client: &Client,
-    gorse_entry_point: &str,
-    movie: &Movie,
-) -> mongodb::error::Result<()> {
-    let opts = options::UpdateOptions::builder().upsert(true).build();
-    let query = doc! {"tmdb_id": movie.id};
+async fn wait_for_typesense(interval: Duration, timeout: Duration) {
+    let typesense = std::env::var("TYPESENSE").unwrap();
+    let key: String = std::env::var("TYPESENSE_KEY").unwrap();
 
-    let update = doc! {"$set": {
-       "title": &movie.title,
-       "overview": &movie.overview,
-       "genres": &movie.map_genres(),
-       "adult": &movie.adult,
-       "poster_path": &movie.poster_path,
-       "backdrop_path": &movie.backdrop_path,
-       "release_date": &movie.release_date,
-    }};
+    loop {
+        let resp = reqwest::Client::new()
+            .get(typesense.to_owned() + "/health")
+            .header(header::CONTENT_TYPE, "application/json")
+            .timeout(timeout)
+            .header("X-TYPESENSE-API-KEY", &key)
+            .send()
+            .await;
 
-    let result = mongo_client
-        .database("data")
-        .collection::<Document>("movies")
-        .update_one(query, update, opts)
-        .await?;
-
-    if result.matched_count == 0 {
-        let response = gorse_post(gorse_entry_point, movie).await;
-        match response {
-            Ok(response) => {
-                if response.status() != 200 {
-                    eprintln!("Error while posting item {}", movie.id);
-                }
-            }
-            Err(err) => {
-                eprintln!("Error while posting item: {:?}", err);
-            }
+        if resp.is_ok_and(|resp| resp.status().is_success()) {
+            eprintln!("Typesense is ready!");
+            return;
         }
+
+        eprintln!("Error while checking Typesense health.");
+        thread::sleep(interval);
     }
+}
+
+async fn typesense_init(recreate: bool) -> Result<(), Error> {
+    use std::fs;
+    let typesense = std::env::var("TYPESENSE").unwrap();
+    let key: String = std::env::var("TYPESENSE_KEY").unwrap();
+
+    if recreate {
+        // delete 'movies' collection
+        let resp = reqwest::Client::new()
+            .delete(typesense.to_owned() + "/collections/movies")
+            .header(header::CONTENT_TYPE, "application/json")
+            .header("X-TYPESENSE-API-KEY", &key)
+            .send()
+            .await?;
+        println!("DELETING MOVIES COLLECTION ({})", resp.status());
+    }
+
+    // create 'movies' collection
+    let data = fs::read_to_string("schema/movies.json").expect("Unable to read file.");
+    let json_payload: serde_json::Value = serde_json::from_str(&data).expect("Unable to parse.");
+
+    let resp = reqwest::Client::new()
+        .post(typesense.to_owned() + "/collections")
+        .header(header::CONTENT_TYPE, "application/json")
+        .header("X-TYPESENSE-API-KEY", &key)
+        .body(json_payload.to_string())
+        .send()
+        .await?;
+    println!("CREATING MOVIES COLLECTION ({})", resp.status());
+
+    Ok(())
+}
+
+async fn typesense_post(movie: &Movie) -> Result<(), Error> {
+    let typesense = std::env::var("TYPESENSE").unwrap();
+    let key: String = std::env::var("TYPESENSE_KEY").unwrap();
+
+    reqwest::Client::new()
+        .post(typesense + "/collections/movies/documents")
+        .header(header::CONTENT_TYPE, "application/json")
+        .header("X-TYPESENSE-API-KEY", key)
+        .query(&[("action", "upsert")])
+        .body(movie.raw())
+        .send()
+        .await?;
 
     Ok(())
 }
@@ -149,49 +165,40 @@ impl Config {
     }
 }
 
-async fn fetch_movies_data(page: u32, token: &str) -> Result<MoviesResponse, Error> {
-    let mut movies_response = fetch_movies(page, token).await?;
+async fn fetch_movies_data(page: u32) -> Result<Vec<Movie>, Error> {
+    let token = std::env::var("TMDB_API_KEY").expect("TMDB_API_KEY must be set.");
+
+    let mut movies_response = fetch_movies(page, &token).await?;
 
     for movie in movies_response.results.iter_mut() {
-        let keywords_response = fetch_keywords(movie.id, token).await?;
-        movie.keywords = keywords_response.keywords;
+        let details = fetch_details(movie.id, &token).await?;
+        movie.set_details(details);
     }
 
-    Ok(movies_response)
+    Ok(movies_response.results)
 }
 
 #[tokio::main]
-async fn main() -> mongodb::error::Result<()> {
+async fn main() -> Result<(), Error> {
     dotenv().ok();
 
-    let mongo_conn = std::env::var("MONGO_CONN").expect("MONGO_CON must be set.");
-    let token = std::env::var("TMDB_API_KEY").expect("TMDB_API_KEY must be set.");
-    let gorse_entry_point = std::env::var("GORSE_ENTRY_POINT").expect("TMDB_API_KEY must be set.");
+    wait_for_typesense(Duration::from_secs(1), Duration::from_secs(1)).await;
 
-    let mut client_options = ClientOptions::parse(&mongo_conn).await?;
-
-    let server_api = ServerApi::builder().version(ServerApiVersion::V1).build();
-    client_options.server_api = Some(server_api);
-
-    let client = Client::with_options(client_options)?;
+    typesense_init(true).await?;
 
     // 1 request every 3 seconds
     let mut pagging = Config::new(1440, Duration::from_secs(3));
 
     loop {
-        let result = fetch_movies_data(pagging.next_page(), &token).await;
+        let movies = fetch_movies_data(pagging.next_page()).await?;
 
-        match result {
-            Ok(movie_page) => {
-                for movie in movie_page.results.iter() {
-                    println!("{}", movie.title);
-                    add_to_system(&client, &gorse_entry_point, movie).await?;
-                    thread::sleep(pagging.interval());
-                }
-            }
-            Err(err) => {
-                eprintln!("Error while fetching movies: {:?}", err);
-            }
+        for movie in movies.iter() {
+            println!("{}: {}", movie.id, movie.title);
+
+            typesense_post(&movie).await?;
+            gorse_post(movie).await?;
+
+            thread::sleep(pagging.interval());
         }
     }
 }

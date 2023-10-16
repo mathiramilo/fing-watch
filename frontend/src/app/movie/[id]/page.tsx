@@ -5,71 +5,54 @@ import Image from 'next/image'
 
 import { AiOutlineHeart } from 'react-icons/ai'
 
-import { ENV } from '@/config'
-import { MovieDetails, MovieProviders } from '@/types'
+import { SERVER_API_URL } from '@/config'
+import { IMovieDetails, IMovieProviders } from '@/types'
 import { getMovieAge, getMovieDuration, getMovieYear, getMovieImageUrl } from '@/utils/movies'
 
 import { CustomRating, IconButton, MoviesSlider, Footer } from '@/components'
 
 export default function MoviePage({ params }: { params: { id: string } }) {
-  const [movie, setMovie] = useState<MovieDetails>()
-  const [providers, setProviders] = useState<MovieProviders>()
-  const [similar, setSimilar] = useState<MovieDetails[]>()
+  const [movie, setMovie] = useState<IMovieDetails>()
+  const [providers, setProviders] = useState<IMovieProviders>()
+  const [similar, setSimilar] = useState<IMovieDetails[]>()
 
   const getMovieDetails = async () => {
-    const url = `https://api.themoviedb.org/3/movie/${params.id}?language=en-US`
+    const url = SERVER_API_URL + `/movies/${params.id}`
 
     const options = {
       method: 'GET',
       headers: {
-        accept: 'application/json',
-        Authorization: `Bearer ${ENV.TMDB_API_KEY}`
+        accept: 'application/json'
       }
     }
 
     const res = await fetch(url, options)
     const data = await res.json()
 
-    setMovie(data as MovieDetails)
-  }
+    console.log(data)
 
-  const getMovieProviders = async () => {
-    const url = `https://api.themoviedb.org/3/movie/${params.id}/watch/providers`
-
-    const options = {
-      method: 'GET',
-      headers: {
-        accept: 'application/json',
-        Authorization: `Bearer ${ENV.TMDB_API_KEY}`
-      }
-    }
-
-    const res = await fetch(url, options)
-    const data = await res.json()
-
-    setProviders(data as MovieProviders)
+    setMovie(data as IMovieDetails)
+    setProviders(data?.watch_providers)
   }
 
   const getSimilarMovies = async () => {
-    const url = `https://api.themoviedb.org/3/movie/${params.id}/recommendations`
+    const url = SERVER_API_URL + `/movies/neighbors/${params.id}?n=18`
 
     const options = {
       method: 'GET',
       headers: {
-        accept: 'application/json',
-        Authorization: `Bearer ${ENV.TMDB_API_KEY}`
+        accept: 'application/json'
       }
     }
 
     const res = await fetch(url, options)
     const data = await res.json()
 
-    setSimilar(data.results as MovieDetails[])
+    setSimilar(data as IMovieDetails[])
   }
 
   useEffect(() => {
     getMovieDetails()
-    getMovieProviders()
     getSimilarMovies()
   }, [params.id]) // eslint-disable-line react-hooks/exhaustive-deps
 
@@ -88,9 +71,9 @@ export default function MoviePage({ params }: { params: { id: string } }) {
         <Image
           src={getMovieImageUrl(movie?.backdrop_path!)}
           alt={movie?.title!}
-          width={1200}
-          height={1200}
-          className="w-full h-full absolute top-0 left-0 z-0 object-cover"
+          width={1600}
+          height={1600}
+          className="w-full h-full absolute top-0 left-0 z-0 object-cover object-top"
         />
 
         {/* Movie Details */}
@@ -111,9 +94,9 @@ export default function MoviePage({ params }: { params: { id: string } }) {
           </div>
 
           {/* Providers */}
-          {providers?.results?.UY && (
+          {providers?.UY && (
             <div className="flex items-center gap-3 mb-5">
-              {providers?.results?.UY?.flatrate?.map((provider, index) => (
+              {providers?.UY?.flatrate?.map((provider, index) => (
                 <Image
                   key={index}
                   src={`https://image.tmdb.org/t/p/original${provider.logo_path}`}
@@ -123,7 +106,7 @@ export default function MoviePage({ params }: { params: { id: string } }) {
                   className="rounded-md"
                 />
               ))}
-              {providers?.results?.UY?.buy?.map((provider, index) => (
+              {providers?.UY?.buy?.map((provider, index) => (
                 <Image
                   key={index}
                   src={`https://image.tmdb.org/t/p/original${provider.logo_path}`}
@@ -138,7 +121,7 @@ export default function MoviePage({ params }: { params: { id: string } }) {
 
           <IconButton
             Icon={AiOutlineHeart}
-            text="Agregar a mi Lista"
+            text="Add to Watchlist"
             iconSize={22}
             textSize="sm"
             className="mb-8"

@@ -4,20 +4,20 @@ import Link from 'next/link'
 import { AiOutlineHeart, AiOutlineLike, AiOutlineDislike } from 'react-icons/ai'
 
 import { getMovieImageUrl } from '@/utils/movies'
-import { MovieDetails, MoviesListItem } from '@/types'
+import { IMovieDetails, IMoviesListItem } from '@/types'
 
 import CustomRating from '@/components/CustomRating'
 import IconButton from '@/components/IconButton'
 
 interface MovieCardProps {
-  movie: MoviesListItem | MovieDetails
+  movie: IMoviesListItem | IMovieDetails
 }
 
 export default function MovieCard({ movie }: MovieCardProps) {
   return (
     <Link
       href={`/movie/${movie.id}`}
-      className="block group aspect-[2/3] rounded-sm relative overflow-hidden"
+      className="block group aspect-[2/3] bg-neutral-800 rounded-sm relative overflow-hidden"
     >
       {/* Movie Poster */}
       <Image
@@ -36,7 +36,7 @@ export default function MovieCard({ movie }: MovieCardProps) {
         {/* Add to my List */}
         <IconButton
           Icon={AiOutlineHeart}
-          text="Agregar a mi Lista"
+          text="Add to Watchlist"
           iconSize={22}
           textSize="sm"
           className="mb-5"
@@ -44,17 +44,17 @@ export default function MovieCard({ movie }: MovieCardProps) {
 
         {/* Like/Dislike */}
         <div className="flex flex-col gap-3">
-          <p className="text-sm text-white/60">¿Cómo calificarias esta película?</p>
+          <p className="text-sm text-white/60">How would you rate this movie?</p>
           <div className="flex items-center gap-4">
             <IconButton
               Icon={AiOutlineLike}
-              text="Me Gusta"
+              text="Like"
               iconSize={20}
               textSize="sm"
             />
             <IconButton
               Icon={AiOutlineDislike}
-              text="No Me Gusta"
+              text="Dislike"
               iconSize={20}
               textSize="sm"
             />

@@ -1,4 +1,4 @@
-export interface MoviesListItem {
+export interface IMoviesListItem {
   adult: boolean
   backdrop_path: string
   genre_ids: number[]
@@ -9,41 +9,36 @@ export interface MoviesListItem {
   popularity: number
   poster_path: string
   release_date: string
+  runtime: number
+  status: string
+  tagline: string
   title: string
-  video: boolean | string
   vote_average: number
   vote_count: number
 }
 
-export interface MovieDetails {
+export interface IMovieDetails {
   adult: boolean
   backdrop_path: string
-  belongs_to_collection: null | object
-  budget: number
   genres: object[]
-  homepage: string
   id: number
-  imdb_id: string
   original_language: string
   original_title: string
   overview: string
   popularity: number
   poster_path: string
   production_companies: object[]
-  production_countries: object[]
   release_date: string
-  revenue: number
   runtime: number
-  spoken_languages: object[]
   status: string
   tagline: string
   title: string
-  video: boolean | string
   vote_average: number
   vote_count: number
+  watch_providers: IMovieProviders
 }
 
-export interface SeriesListItem {
+export interface ISeriesListItem {
   backdrop_path: string
   first_air_date: string
   genre_ids: number[]
@@ -59,7 +54,7 @@ export interface SeriesListItem {
   vote_count: number
 }
 
-export interface SeriesDetails {
+export interface ISeriesDetails {
   adult: boolean
   backdrop_path: string
   created_by: object[]
@@ -93,29 +88,50 @@ export interface SeriesDetails {
   vote_count: number
 }
 
-export interface MovieProviders {
-  id: number
-  results: {
-    [key: string]: {
-      link: string
-      rent: {
-        logo_path: string
-        provider_id: number
-        provider_name: string
-        display_priority: string
-      }[]
-      buy: {
-        logo_path: string
-        provider_id: number
-        provider_name: string
-        display_priority: string
-      }[]
-      flatrate: {
-        logo_path: string
-        provider_id: number
-        provider_name: string
-        display_priority: string
-      }[]
+export interface IMovieProviders {
+  [key: string]: {
+    link: string
+    rent: {
+      logo_path: string
+      provider_id: number
+      provider_name: string
+      display_priority: string
+    }[]
+    buy: {
+      logo_path: string
+      provider_id: number
+      provider_name: string
+      display_priority: string
+    }[]
+    flatrate: {
+      logo_path: string
+      provider_id: number
+      provider_name: string
+      display_priority: string
+    }[]
+  }
+}
+
+export interface ISearchResults {
+  facet_counts: Array
+  found: number
+  hits: ISearchResultsHit[]
+  out_of: number
+  page: number
+  request_params: object
+  search_cutoff: boolean
+  search_time_ms: number
+}
+
+export interface ISearchResultsHit {
+  document: IMoviesListItem
+  highlight: {
+    title: {
+      matched_tokens: string[]
+      snippet: string
     }
   }
+  highlights: Array
+  text_match: number
+  text_match_info: object
 }

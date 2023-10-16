@@ -1,0 +1,9 @@
+{
+    "name": "genres",
+    "fields": [
+        {
+            "name": "name",
+            "type": "string"
+        }
+    ]
+}

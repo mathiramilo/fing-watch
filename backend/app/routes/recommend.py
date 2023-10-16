@@ -1,7 +1,6 @@
 from flask import Blueprint
 from flask import request
-import pymongo
-from ..utils.constants import GORSE_API, MONGO_URI
+from ..utils.constants import GORSE_API
 from ..models.movie import get_movies
 import requests
 
@@ -18,8 +17,7 @@ def process_request(endpoint):
     # get movies id from gorse
     movies_ids = [item["ItemId"] for item in resp.json()]
 
-    with pymongo.MongoClient(MONGO_URI) as client:
-        result = get_movies(client, movies_ids)
+    result = get_movies(movies_ids)
 
     return result, 200
 

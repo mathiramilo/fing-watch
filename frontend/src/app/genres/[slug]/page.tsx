@@ -4,16 +4,19 @@ import { useState, useEffect } from 'react'
 
 import { SERVER_API_URL } from '@/config'
 import { IMoviesListItem } from '@/types'
+import { prettifyGenre } from '@/utils/movies'
 
-import { GenresSlider, MoviesSlider, Footer } from '@/components'
+import { MoviesSlider, Footer } from '@/components'
 
-export default function Home() {
+export default function Genre({ params }: { params: { slug: string } }) {
   const [trendingMovies, setTrendingMovies] = useState<IMoviesListItem[]>([])
   const [popularMovies, setPopularMovies] = useState<IMoviesListItem[]>([])
   const [topRatedMovies, setTopRatedMovies] = useState<IMoviesListItem[]>([])
 
+  const genre = params.slug
+
   const getTrendingMovies = async () => {
-    const url = SERVER_API_URL + '/movies/neighbors/299536?n=18'
+    const url = SERVER_API_URL + `/movies/latest/${genre}?n=18`
 
     const options = {
       method: 'GET',
@@ -29,7 +32,7 @@ export default function Home() {
   }
 
   const getPopularMovies = async () => {
-    const url = SERVER_API_URL + '/movies/popular?n=18'
+    const url = SERVER_API_URL + `/movies/popular/${genre}?n=18`
 
     const options = {
       method: 'GET',
@@ -45,7 +48,7 @@ export default function Home() {
   }
 
   const getTopRatedMovies = async () => {
-    const url = SERVER_API_URL + '/movies/neighbors/575264?n=18'
+    const url = SERVER_API_URL + `/movies/neighbors/575264/${genre}?n=18`
     const options = {
       method: 'GET',
       headers: {
@@ -63,11 +66,11 @@ export default function Home() {
     getTrendingMovies()
     getPopularMovies()
     getTopRatedMovies()
-  }, [])
+  }, [genre]) // eslint-disable-line react-hooks/exhaustive-deps
 
   return (
-    <main className="w-[90%] mx-auto sm:w-full sm:px-12 pt-32">
-      <GenresSlider />
+    <main className="w-[90%] mx-auto sm:w-full sm:px-12 pt-[4.2em]">
+      <h1 className="text-lg font-bold text-white/50 text-center mb-16">{prettifyGenre(genre)}</h1>
       <MoviesSlider
         title="Recommended for You"
         movies={trendingMovies}
