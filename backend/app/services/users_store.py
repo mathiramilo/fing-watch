@@ -2,31 +2,43 @@ from  werkzeug.security import check_password_hash
 from datetime import datetime, timedelta
 from pymongo import MongoClient
 from ..models.user import User
-from ..utils.constants import MONGODB_HOST, MONGODB_PORT, JWT_ENCODING_KEY, TOKEN_VALIDITY
+from ..utils.constants import MONGO_URI, JWT_ENCODING_KEY, TOKEN_VALIDITY, USERS_DB, USERS_COLLECTION, GORSE_API
+import requests
 import uuid
 import jwt
 
 # Creates a user in the system and returns its auth token
-def create_user(user: User, password):
+def create_user(user: User, password, labels = [], suscribe = []):
     if (user.email == None or user.email == '' or password == None or password == ''):
         raise IncorrectCredentials()
-    client = MongoClient(MONGODB_HOST, MONGODB_PORT)
-    db = client.flask_db
-    users = db.get_collection("users")
+    client = MongoClient(MONGO_URI)
+    db = client[USERS_DB]
+    users = db[USERS_COLLECTION]
+    newUserId = str(uuid.uuid4())
     usr = users.find_one({ "email": user.email })
     if usr != None: 
         raise UserExists()
-    user.setId(str(uuid.uuid4()))
+    user.setId(newUserId)
     user.setPassword(password)
     users.insert_one(user.toCollectionEntry())
+
+    # Create user for gorse - set the id of the user as userId in gorse
+    gorse_users = db['gorse_users']
+    gorse_users.insert_one({
+        "userid": newUserId,
+        "comment": "",
+        "labels": labels,
+        "subscribe": suscribe
+    })
+
     token = build_token(user)
     return RegisterResult(True, token)
 
 # Validates email, password and returns it's auth token if validated correctly
 def login(email, password):
-    client = MongoClient('localhost', 27017)
-    db = client.flask_db
-    users = db.get_collection("users")
+    client = MongoClient(MONGO_URI)
+    db = client[USERS_DB]
+    users = db[USERS_COLLECTION]
     user = users.find_one({ "email": email })
 
     if user == None or not check_password_hash(user["password"], password):
@@ -42,7 +54,7 @@ def build_token(user: User):
     return jwt.encode({
             'userid': user.id,
             'email': user.email,
-            'exp' : datetime.utcnow() + timedelta(minutes = TOKEN_VALIDITY)
+            'exp' : datetime.utcnow() + timedelta(minutes = int(TOKEN_VALIDITY))
         }, JWT_ENCODING_KEY)
 
 
