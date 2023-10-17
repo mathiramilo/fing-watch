@@ -8,7 +8,7 @@ import { prettifyGenre } from '@/utils/movies'
 
 import { MoviesSlider, Footer } from '@/components'
 
-export default function Genre({ params }: { params: { slug: string } }) {
+export default function GenrePage({ params }: { params: { slug: string } }) {
   const [trendingMovies, setTrendingMovies] = useState<IMoviesListItem[]>([])
   const [popularMovies, setPopularMovies] = useState<IMoviesListItem[]>([])
   const [topRatedMovies, setTopRatedMovies] = useState<IMoviesListItem[]>([])

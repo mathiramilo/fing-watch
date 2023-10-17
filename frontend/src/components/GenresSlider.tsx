@@ -5,8 +5,6 @@ import { useEffect, useState } from 'react'
 
 import { SERVER_API_URL } from '@/config'
 
-import CustomCarousel from './CustomCarousel'
-
 export default function GenresSlider() {
   const [categories, setCategories] = useState<string[]>([])
 
@@ -31,18 +29,18 @@ export default function GenresSlider() {
   }, [])
 
   return (
-    <CustomCarousel responsive={responsive}>
+    <section className="flex flex-wrap gap-4">
       {categories.map((genre) => (
         <Link
           key={genre}
           href={`/genres/${genre}`}
         >
-          <button className="h-48 aspect-square bg-white/10 border border-stone-700 rounded-md hover:bg-white/20 hover:text-white hover:border-stone-600 transition-colors">
-            <h3 className="font-bold text-lg text-white/80">{genre}</h3>
+          <button className="group px-8 py-2 bg-black/70 border border-stone-700 rounded-full hover:bg-stone-900 hover:text-white hover:border-stone-600 transition-colors">
+            <h3 className="text-white/80 group-hover:text-white transition-colors">{genre}</h3>
           </button>
         </Link>
       ))}
-    </CustomCarousel>
+    </section>
   )
 }
 

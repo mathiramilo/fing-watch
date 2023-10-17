@@ -26,6 +26,7 @@ export default function Navbar() {
 
   const handleSignOut = () => {
     setToken(null)
+    setProfileOpen(false)
   }
 
   useEffect(() => {
@@ -68,13 +69,13 @@ export default function Navbar() {
               />
             </button>
             <Link
-              href="/movies"
+              href="/"
               className="text-white/80 font-bold hidden sm:block hover:text-white transition-colors"
             >
               Movies
             </Link>
             <Link
-              href="/series"
+              href="/"
               className="text-white/80 font-bold hidden sm:block hover:text-white transition-colors"
             >
               Series
@@ -110,7 +111,7 @@ export default function Navbar() {
                   onClick={() => setProfileOpen(!profileOpen)}
                   className="w-10 h-10 flex justify-center items-center rounded-full bg-violet-950 border border-stone-700/60 text-lg font-bold uppercase"
                 >
-                  {user?.email[0]}
+                  {user?.email?.[0]}
                 </button>
 
                 {/* Profile Menu */}
@@ -134,18 +135,21 @@ export default function Navbar() {
                   <Link
                     href="/profile"
                     className="text-start text-white/80 hover:text-white transition-colors"
+                    onClick={() => setProfileOpen(false)}
                   >
                     My Watchlist
                   </Link>
                   <Link
                     href="/profile"
                     className="text-start text-white/80 hover:text-white transition-colors"
+                    onClick={() => setProfileOpen(false)}
                   >
                     Profile
                   </Link>
                   <Link
                     href="/profile"
                     className="text-start text-white/80 hover:text-white transition-colors"
+                    onClick={() => setProfileOpen(false)}
                   >
                     Settings
                   </Link>

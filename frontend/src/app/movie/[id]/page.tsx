@@ -96,8 +96,8 @@ export default function MoviePage({ params }: { params: { id: string } }) {
     }
   }
 
-  const handleInitialState = async () => {
-    if (user?.watchlist?.find((id) => id === parseInt(params.id))) {
+  const loadInitialState = async () => {
+    if (user?.watchlist?.find((id) => id === params.id)) {
       setIsInWatchlist(true)
     }
   }
@@ -105,7 +105,7 @@ export default function MoviePage({ params }: { params: { id: string } }) {
   useEffect(() => {
     getMovieDetails()
     getSimilarMovies()
-    handleInitialState()
+    loadInitialState()
   }, [params.id]) // eslint-disable-line react-hooks/exhaustive-deps
 
   return (

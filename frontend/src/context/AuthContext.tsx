@@ -1,5 +1,6 @@
-import { SERVER_API_URL } from '@/config'
 import { createContext, useState, useEffect } from 'react'
+
+import { SERVER_API_URL } from '@/config'
 
 interface AuthProviderProps {
   children: React.ReactNode
@@ -25,8 +26,8 @@ function AuthProvider({ children }: AuthProviderProps) {
   const [user, setUser] = useState<User | null>(null)
   const [token, setToken] = useState<string | null>(null)
 
-  const getWatchlist = async () => {
-    const url = SERVER_API_URL + `/users/${user?.id}/watchlist`
+  const getWatchlist = async (id: string) => {
+    const url = SERVER_API_URL + `/users/${id}/watchlist`
 
     const options = {
       method: 'GET',
@@ -38,7 +39,16 @@ function AuthProvider({ children }: AuthProviderProps) {
     const res = await fetch(url, options)
     const data = await res.json()
 
-    setUser((prevUser) => ({ ...prevUser, watchlist: data } as User))
+    if (data.result) {
+      return data.watchlist
+    }
+  }
+
+  const getUser = async (token: string) => {
+    const user = parseJwt(token)
+    const watchlist = await getWatchlist(user?.id!)
+
+    return { ...user, watchlist } as User
   }
 
   useEffect(() => {
@@ -51,14 +61,14 @@ function AuthProvider({ children }: AuthProviderProps) {
   useEffect(() => {
     if (token) {
       localStorage.setItem('token', JSON.stringify(token))
-      const user = parseJwt(token)
-      setUser(user)
-      getWatchlist()
+      getUser(token).then((user) => {
+        setUser(user)
+      })
     } else {
       localStorage.removeItem('token')
       setUser(null)
     }
-  }, [token])
+  }, [token]) // eslint-disable-line react-hooks/exhaustive-deps
 
   return <AuthContext.Provider value={{ user, setUser, token, setToken }}>{children}</AuthContext.Provider>
 }
@@ -70,7 +80,7 @@ export class User {
   id: string
   email: string
   validity: Date
-  watchlist: number[]
+  watchlist: string[]
 
   constructor(id: string, email: string, validity: number) {
     this.id = id

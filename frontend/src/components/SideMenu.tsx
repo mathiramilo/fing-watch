@@ -44,14 +44,14 @@ export default function SideMenu({ open, setOpen }: SideMenuProps) {
           Home
         </Link>
         <Link
-          href="/movies"
+          href="/"
           onClick={() => setOpen(false)}
           className="text-lg text-white/80 hover:text-white transition-colors"
         >
           Movies
         </Link>
         <Link
-          href="/series"
+          href="/"
           onClick={() => setOpen(false)}
           className="text-lg text-white/80 hover:text-white transition-colors"
         >
@@ -75,7 +75,7 @@ export default function SideMenu({ open, setOpen }: SideMenuProps) {
         <Divider color="#393939" />
 
         <Link
-          href="/"
+          href="/profile"
           onClick={() => setOpen(false)}
           className="text-lg text-white/80 hover:text-white transition-colors"
         >

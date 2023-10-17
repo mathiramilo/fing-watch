@@ -7,13 +7,13 @@ import { IMoviesListItem } from '@/types'
 
 import { GenresSlider, MoviesSlider, Footer } from '@/components'
 
-export default function Home() {
+export default function HomePage() {
   const [trendingMovies, setTrendingMovies] = useState<IMoviesListItem[]>([])
   const [popularMovies, setPopularMovies] = useState<IMoviesListItem[]>([])
   const [topRatedMovies, setTopRatedMovies] = useState<IMoviesListItem[]>([])
 
   const getTrendingMovies = async () => {
-    const url = SERVER_API_URL + '/movies/neighbors/893723?n=18'
+    const url = SERVER_API_URL + '/movies/neighbors/346698?n=18'
 
     const options = {
       method: 'GET',
@@ -45,7 +45,7 @@ export default function Home() {
   }
 
   const getTopRatedMovies = async () => {
-    const url = SERVER_API_URL + '/movies/neighbors/575264?n=18'
+    const url = SERVER_API_URL + '/movies/neighbors/385687?n=18'
     const options = {
       method: 'GET',
       headers: {
@@ -67,7 +67,10 @@ export default function Home() {
 
   return (
     <main className="w-[90%] mx-auto sm:w-full sm:px-12 pt-32">
-      <GenresSlider />
+      <section className="mb-12">
+        <h2 className="font-bold text-white/90 mb-4">Browse by Genre</h2>
+        <GenresSlider />
+      </section>
       <MoviesSlider
         title="Recommended for You"
         movies={trendingMovies}

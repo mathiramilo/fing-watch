@@ -69,11 +69,15 @@ export default function MovieCard({ movie }: MovieCardProps) {
     }
   }
 
-  const loadInitialState = async () => {}
+  const loadInitialState = async () => {
+    if (user?.watchlist?.find((id) => id === movie.id.toString())) {
+      setIsInWatchlist(true)
+    }
+  }
 
   useEffect(() => {
     loadInitialState()
-  }, [])
+  }, []) // eslint-disable-line react-hooks/exhaustive-deps
 
   return (
     <Link
