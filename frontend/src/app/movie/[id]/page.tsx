@@ -3,11 +3,14 @@
 import { useEffect, useState } from 'react'
 import Image from 'next/image'
 
-import { AiOutlineHeart } from 'react-icons/ai'
+import { AiFillHeart, AiOutlineHeart, AiFillLike, AiOutlineLike, AiFillDislike, AiOutlineDislike } from 'react-icons/ai'
 
 import { SERVER_API_URL } from '@/config'
 import { IMovieDetails, IMovieProviders } from '@/types'
 import { getMovieAge, getMovieDuration, getMovieYear, getMovieImageUrl } from '@/utils/movies'
+
+import { User } from '@/context/AuthContext'
+import { useAuth } from '@/hooks/useAuth'
 
 import { CustomRating, IconButton, MoviesSlider, Footer } from '@/components'
 
@@ -15,6 +18,12 @@ export default function MoviePage({ params }: { params: { id: string } }) {
   const [movie, setMovie] = useState<IMovieDetails>()
   const [providers, setProviders] = useState<IMovieProviders>()
   const [similar, setSimilar] = useState<IMovieDetails[]>()
+
+  const [isInWatchlist, setIsInWatchlist] = useState(false)
+  const [isLiked, setIsLiked] = useState(false)
+  const [isDisliked, setIsDisliked] = useState(false)
+
+  const { user, setUser } = useAuth()
 
   const getMovieDetails = async () => {
     const url = SERVER_API_URL + `/movies/${params.id}`
@@ -28,8 +37,6 @@ export default function MoviePage({ params }: { params: { id: string } }) {
 
     const res = await fetch(url, options)
     const data = await res.json()
-
-    console.log(data)
 
     setMovie(data as IMovieDetails)
     setProviders(data?.watch_providers)
@@ -51,9 +58,54 @@ export default function MoviePage({ params }: { params: { id: string } }) {
     setSimilar(data as IMovieDetails[])
   }
 
+  const handleAddToWatchlist = async () => {
+    const url = SERVER_API_URL + `/users/${user?.id}/watchlist/${movie?.id}`
+
+    const options = {
+      method: 'POST',
+      headers: {
+        accept: 'application/json'
+      }
+    }
+
+    const res = await fetch(url, options)
+    const data = await res.json()
+
+    if (data?.result) {
+      setUser({ ...user, watchlist: data?.watchlist } as User)
+      setIsInWatchlist(true)
+    }
+  }
+
+  const handleRemoveFromWatchlist = async () => {
+    const url = SERVER_API_URL + `/users/${user?.id}/watchlist/${movie?.id}`
+
+    const options = {
+      method: 'DELETE',
+      headers: {
+        accept: 'application/json'
+      }
+    }
+
+    const res = await fetch(url, options)
+    const data = await res.json()
+
+    if (data?.result) {
+      setUser({ ...user, watchlist: data?.watchlist } as User)
+      setIsInWatchlist(false)
+    }
+  }
+
+  const handleInitialState = async () => {
+    if (user?.watchlist?.find((id) => id === parseInt(params.id))) {
+      setIsInWatchlist(true)
+    }
+  }
+
   useEffect(() => {
     getMovieDetails()
     getSimilarMovies()
+    handleInitialState()
   }, [params.id]) // eslint-disable-line react-hooks/exhaustive-deps
 
   return (
@@ -120,11 +172,12 @@ export default function MoviePage({ params }: { params: { id: string } }) {
           )}
 
           <IconButton
-            Icon={AiOutlineHeart}
-            text="Add to Watchlist"
+            Icon={isInWatchlist ? AiFillHeart : AiOutlineHeart}
+            text={isInWatchlist ? 'Remove from Watchlist' : 'Add to Watchlist'}
             iconSize={22}
             textSize="sm"
             className="mb-8"
+            onClick={isInWatchlist ? handleRemoveFromWatchlist : handleAddToWatchlist}
           />
 
           {/* Overview */}

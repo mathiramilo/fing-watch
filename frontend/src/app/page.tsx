@@ -13,7 +13,7 @@ export default function Home() {
   const [topRatedMovies, setTopRatedMovies] = useState<IMoviesListItem[]>([])
 
   const getTrendingMovies = async () => {
-    const url = SERVER_API_URL + '/movies/neighbors/299536?n=18'
+    const url = SERVER_API_URL + '/movies/neighbors/893723?n=18'
 
     const options = {
       method: 'GET',

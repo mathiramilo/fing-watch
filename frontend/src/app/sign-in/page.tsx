@@ -2,6 +2,7 @@
 
 import { useState } from 'react'
 import Link from 'next/link'
+import { useRouter } from 'next/navigation'
 
 import { AiOutlineGoogle } from 'react-icons/ai'
 import { BiError } from 'react-icons/bi'
@@ -13,10 +14,12 @@ import { signIn } from '@/services/auth'
 import { Footer, IconButton } from '@/components'
 
 export default function SignInPage() {
-  const { setUser, setToken } = useAuth()
+  const { setToken } = useAuth()
 
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState('')
+
+  const router = useRouter()
 
   const handleSignIn = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault()
@@ -38,11 +41,9 @@ export default function SignInPage() {
 
       const data = await signIn(payload.email, payload.password)
 
-      if (data) {
-        const { user: signedInUser, token } = data
-
-        setUser(signedInUser)
-        setToken(token)
+      if (data?.result) {
+        setToken(data?.token)
+        router.push('/')
       }
     } catch (error) {
       setError((error as Error).message as string)

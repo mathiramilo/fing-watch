@@ -5,7 +5,7 @@ interface IconButtonProps {
   text: string
   iconSize?: number
   textSize?: 'xs' | 'sm' | 'md' | 'lg' | 'xl'
-  onClick?: () => {}
+  onClick?: (e: React.MouseEvent) => {}
   className?: string
 }
 

@@ -12,7 +12,6 @@ interface SideMenuProps {
 export default function SideMenu({ open, setOpen }: SideMenuProps) {
   const handleClose = (e: React.MouseEvent<HTMLDivElement>) => {
     if (e.target === e.currentTarget) setOpen(false)
-
     return
   }
 
@@ -80,7 +79,7 @@ export default function SideMenu({ open, setOpen }: SideMenuProps) {
           onClick={() => setOpen(false)}
           className="text-lg text-white/80 hover:text-white transition-colors"
         >
-          My List
+          My Watchlist
         </Link>
       </div>
     </div>

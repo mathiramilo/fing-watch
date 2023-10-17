@@ -1,10 +1,17 @@
+'use client'
+
+import { useState, useEffect } from 'react'
 import Image from 'next/image'
 import Link from 'next/link'
 
-import { AiOutlineHeart, AiOutlineLike, AiOutlineDislike } from 'react-icons/ai'
+import { AiOutlineHeart, AiFillHeart, AiOutlineLike, AiFillLike, AiOutlineDislike, AiFillDislike } from 'react-icons/ai'
 
-import { getMovieImageUrl } from '@/utils/movies'
+import { SERVER_API_URL } from '@/config'
 import { IMovieDetails, IMoviesListItem } from '@/types'
+import { getMovieImageUrl } from '@/utils/movies'
+
+import { User } from '@/context/AuthContext'
+import { useAuth } from '@/hooks/useAuth'
 
 import CustomRating from '@/components/CustomRating'
 import IconButton from '@/components/IconButton'
@@ -14,6 +21,60 @@ interface MovieCardProps {
 }
 
 export default function MovieCard({ movie }: MovieCardProps) {
+  const [isInWatchlist, setIsInWatchlist] = useState(false)
+  const [isLiked, setIsLiked] = useState(false)
+  const [isDisliked, setIsDisliked] = useState(false)
+
+  const { user, setUser } = useAuth()
+
+  const handleAddToWatchlist = async (e: React.MouseEvent) => {
+    e.preventDefault()
+
+    const url = SERVER_API_URL + `/users/${user?.id}/watchlist/${movie.id}`
+
+    const options = {
+      method: 'POST',
+      headers: {
+        accept: 'application/json'
+      }
+    }
+
+    const res = await fetch(url, options)
+    const data = await res.json()
+
+    if (data.result) {
+      setUser({ ...user, watchlist: data?.watchlist } as User)
+      setIsInWatchlist(true)
+    }
+  }
+
+  const handleRemoveFromWatchlist = async (e: React.MouseEvent) => {
+    e.preventDefault()
+
+    const url = SERVER_API_URL + `/users/${user?.id}/watchlist/${movie?.id}`
+
+    const options = {
+      method: 'DELETE',
+      headers: {
+        accept: 'application/json'
+      }
+    }
+
+    const res = await fetch(url, options)
+    const data = await res.json()
+
+    if (data?.result) {
+      setUser({ ...user, watchlist: data?.watchlist } as User)
+      setIsInWatchlist(false)
+    }
+  }
+
+  const loadInitialState = async () => {}
+
+  useEffect(() => {
+    loadInitialState()
+  }, [])
+
   return (
     <Link
       href={`/movie/${movie.id}`}
@@ -33,13 +94,14 @@ export default function MovieCard({ movie }: MovieCardProps) {
         <h3 className="font-bold mb-4 text-white/90">{movie.title}</h3>
         <p className="font-normal text-sm text-white/50 mb-5 line-clamp-6">{movie.overview}</p>
 
-        {/* Add to my List */}
+        {/* Add to Watchlist */}
         <IconButton
-          Icon={AiOutlineHeart}
-          text="Add to Watchlist"
+          Icon={isInWatchlist ? AiFillHeart : AiOutlineHeart}
+          text={isInWatchlist ? 'Remove from Watchlist' : 'Add to Watchlist'}
           iconSize={22}
           textSize="sm"
           className="mb-5"
+          onClick={isInWatchlist ? handleRemoveFromWatchlist : handleAddToWatchlist}
         />
 
         {/* Like/Dislike */}

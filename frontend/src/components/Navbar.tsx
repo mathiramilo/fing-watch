@@ -1,30 +1,48 @@
 'use client'
 
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useRef } from 'react'
 
 import Image from 'next/image'
 import Link from 'next/link'
 
-import { BiSearch } from 'react-icons/bi'
+import { BiSearch, BiUserCircle } from 'react-icons/bi'
 import { RxHamburgerMenu } from 'react-icons/rx'
 
 import { useAuth } from '@/hooks/useAuth'
 
 import SideMenu from './SideMenu'
+import { Divider } from '@mui/material'
 
 export default function Navbar() {
-  const { user } = useAuth()
+  const { user, setToken } = useAuth()
 
   const [menuOpen, setMenuOpen] = useState(false)
+  const [profileOpen, setProfileOpen] = useState(false)
   const [scrollY, setScrollY] = useState(0)
+
+  const profileMenuRef = useRef<HTMLDivElement>(null)
 
   const handleScrollY = () => setScrollY(window.scrollY)
 
+  const handleSignOut = () => {
+    setToken(null)
+  }
+
   useEffect(() => {
     window.addEventListener('scroll', handleScrollY)
-
     return () => window.removeEventListener('scroll', handleScrollY)
   }, [])
+
+  useEffect(() => {
+    const handleWindowClick = (e: any) => {
+      if (!profileMenuRef.current?.contains(e.target)) {
+        setProfileOpen(false)
+      }
+    }
+
+    window.addEventListener('mousedown', handleWindowClick)
+    return () => window.removeEventListener('mousedown', handleWindowClick)
+  })
 
   return (
     <>
@@ -86,7 +104,60 @@ export default function Navbar() {
             </Link>
 
             {user ? (
-              <div>{user?.email}</div>
+              <div className="relative">
+                {/* User Avatar */}
+                <button
+                  onClick={() => setProfileOpen(!profileOpen)}
+                  className="w-10 h-10 flex justify-center items-center rounded-full bg-violet-950 border border-stone-700/60 text-lg font-bold uppercase"
+                >
+                  {user?.email[0]}
+                </button>
+
+                {/* Profile Menu */}
+                <div
+                  ref={profileMenuRef}
+                  className={`${
+                    !profileOpen && 'opacity-0 scale-95 -translate-y-3 translate-x-2 pointer-events-none'
+                  } absolute top-12 right-0 bg-neutral-900 p-4 rounded-md min-w-[200px] flex flex-col gap-3 shadow-xl transition-all`}
+                >
+                  <div className="flex items-center gap-3">
+                    <BiUserCircle
+                      size={36}
+                      className="text-white/80"
+                    />
+                    <div>
+                      <p className="text-white/90 font-bold mb-1">{user?.email}</p>
+                      <p className="text-white/50 text-xs">Welcome!</p>
+                    </div>
+                  </div>
+                  <Divider color="#5e5d5d" />
+                  <Link
+                    href="/profile"
+                    className="text-start text-white/80 hover:text-white transition-colors"
+                  >
+                    My Watchlist
+                  </Link>
+                  <Link
+                    href="/profile"
+                    className="text-start text-white/80 hover:text-white transition-colors"
+                  >
+                    Profile
+                  </Link>
+                  <Link
+                    href="/profile"
+                    className="text-start text-white/80 hover:text-white transition-colors"
+                  >
+                    Settings
+                  </Link>
+                  <Divider color="#5e5d5d" />
+                  <button
+                    className="text-start text-white/80 hover:text-white transition-colors"
+                    onClick={handleSignOut}
+                  >
+                    Sign Out
+                  </button>
+                </div>
+              </div>
             ) : (
               <div className="flex items-center gap-6">
                 <Link
