@@ -52,9 +52,9 @@ async fn gorse_post(movie: &Movie) -> Result<(), Error> {
     let item = Item {
         id: movie.id.to_string(),
         hidden: false,
-        categories: movie.genre_ids.iter().map(|g| g.to_string()).collect(),
+        categories: movie.genres.iter().map(|g| g.name.to_owned()).collect(),
         timestamp: movie.release_date.clone(),
-        labels: movie.keywords.iter().map(|k| k.name.clone()).collect(),
+        labels: movie.keywords.iter().map(|k| k.name.to_owned()).collect(),
         comment: movie.title.clone(),
     };
 

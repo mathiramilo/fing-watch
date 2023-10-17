@@ -14,7 +14,8 @@ pub struct Movie {
     pub id: u32,
     pub adult: bool,
     pub backdrop_path: Option<String>,
-    pub genre_ids: Vec<u32>,
+    #[serde(default)]
+    pub genres: Vec<Genre>,
     pub original_language: String,
     pub original_title: String,
     pub overview: String,
@@ -41,6 +42,7 @@ pub struct Movie {
 
 impl Movie {
     pub fn set_details(&mut self, details: MovieDetails) {
+        self.genres = details.genres;
         self.runtime = details.runtime;
         self.status = details.status;
         self.tagline = details.tagline;
