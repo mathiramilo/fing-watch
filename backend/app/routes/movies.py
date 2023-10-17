@@ -29,9 +29,9 @@ def get_popular():
     return process_request("/popular")
 
 
-@movies.get("/popular/<genre>")
-def get_popular_by_genre(genre):
-    return process_request(f"/popular/{genre}")
+@movies.get("/popular/<genre_id>")
+def get_popular_by_genre(genre_id):
+    return process_request(f"/popular/{genre_id}")
 
 
 @movies.get("/latest")
@@ -39,9 +39,9 @@ def get_latest():
     return process_request("/latest")
 
 
-@movies.get("/latest/<genre>")
-def get_latest_by_genre(genre):
-    return process_request(f"/latest/{genre}")
+@movies.get("/latest/<genre_id>")
+def get_latest_by_genre(genre_id):
+    return process_request(f"/latest/{genre_id}")
 
 
 @movies.get("/neighbors/<tmdb_id>")
@@ -49,9 +49,9 @@ def get_neighbors(tmdb_id):
     return process_request(f"/item/{tmdb_id}/neighbors")
 
 
-@movies.get("/neighbors/<tmdb_id>/<genre>")
-def get_neighbors_by_genre(tmdb_id, genre):
-    return process_request(f"/item/{tmdb_id}/neighbors/{genre}")
+@movies.get("/neighbors/<tmdb_id>/<genre_id>")
+def get_neighbors_by_genre(tmdb_id, genre_id):
+    return process_request(f"/item/{tmdb_id}/neighbors/{genre_id}")
 
 
 @movies.get("/")

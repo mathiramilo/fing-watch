@@ -27,6 +27,6 @@ def get_recommendations(user_id, recommender):
     return process_request(f"/dashboard/recommend/{user_id}/{recommender}")
 
 
-@recommend.get("/<user_id>/<recommender>/<genre>")
-def get_recommendations_by_genre(user_id, recommender, genre):
-    return process_request(f"/dashboard/recommend/{user_id}/{recommender}/{genre}")
+@recommend.get("/<user_id>/<recommender>/<genre_id>")
+def get_recommendations_by_genre(user_id, recommender, genre_id):
+    return process_request(f"/dashboard/recommend/{user_id}/{recommender}/{genre_id}")
