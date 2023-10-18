@@ -1,54 +1,19 @@
+use reqwest::{header, Error};
 use serde::{Deserialize, Serialize};
-use serde_json::{Map, Value};
+use std::collections::HashMap;
+use std::fs;
+use std::io::prelude::*;
 
 #[derive(Debug, Deserialize, Serialize)]
 pub struct MoviesResponse {
     pub page: u32,
-    pub results: Vec<Movie>,
+    pub results: Vec<MovieID>,
     pub total_pages: u32,
     pub total_results: u32,
 }
-
 #[derive(Debug, Deserialize, Serialize)]
-pub struct Movie {
+pub struct MovieID {
     pub id: u32,
-    pub adult: bool,
-    pub backdrop_path: Option<String>,
-    #[serde(default)]
-    pub genres: Vec<Genre>,
-    pub original_language: String,
-    pub original_title: String,
-    pub overview: String,
-    pub popularity: f64,
-    pub poster_path: Option<String>,
-    pub release_date: String,
-    pub title: String,
-    #[serde(skip)]
-    pub video: bool,
-    pub vote_average: f64,
-    pub vote_count: u32,
-    #[serde(default)]
-    pub runtime: u32,
-    #[serde(default)]
-    pub tagline: String,
-    #[serde(default)]
-    pub status: String,
-    #[serde(default)]
-    #[serde(skip_serializing)]
-    pub keywords: Vec<Keyword>,
-    #[serde(default)]
-    pub watch_providers: std::collections::HashMap<String, Providers>,
-}
-
-impl Movie {
-    pub fn set_details(&mut self, details: MovieDetails) {
-        self.genres = details.genres;
-        self.runtime = details.runtime;
-        self.status = details.status;
-        self.tagline = details.tagline;
-        self.keywords = details.keywords.keywords;
-        self.watch_providers = details.watch_providers.results;
-    }
 }
 
 #[derive(Debug, Deserialize, Serialize)]
@@ -62,81 +27,43 @@ pub struct Keyword {
     pub name: String,
 }
 
-// fn map_genre(id: u32) -> &'static str {
-//     match id {
-//         28 => "Action",
-//         12 => "Adventure",
-//         16 => "Animation",
-//         35 => "Comedy",
-//         80 => "Crime",
-//         99 => "Documentary",
-//         18 => "Drama",
-//         10751 => "Family",
-//         14 => "Fantasy",
-//         36 => "History",
-//         27 => "Horror",
-//         10402 => "Music",
-//         9648 => "Mystery",
-//         10749 => "Romance",
-//         878 => "Science Fiction",
-//         10770 => "TV Movie",
-//         53 => "Thriller",
-//         10752 => "War",
-//         37 => "Western",
-//         _ => panic!("Invalid genre_id!"),
-//     }
-// }
+pub fn parse(json: &HashMap<String, serde_json::Value>) -> Result<MovieDetails, serde_json::Error> {
+    let s = serde_json::to_string(json)?;
+    let mut details: MovieDetails = serde_json::from_str(&s)?;
 
-impl Movie {
-    // pub fn map_genres(&self) -> Vec<String> {
-    //     self.genre_ids
-    //         .iter()
-    //         .map(|id| map_genre(*id).to_string())
-    //         .collect()
-    // }
+    details.id = json["id"].to_string();
+    details.watch_providers = Deserialize::deserialize(&json["watch/providers"]["results"])?;
+    details.keywords = Deserialize::deserialize(&json["keywords"]["keywords"])?;
 
-    pub fn raw(&self) -> String {
-        let raw_data = serde_json::to_string(self).unwrap();
-        let mut parsed_data: Map<String, Value> = serde_json::from_str(&raw_data).unwrap();
-
-        parsed_data["id"] = Value::from(parsed_data["id"].to_string());
-
-        return serde_json::to_string(&parsed_data).unwrap();
-    }
+    Ok(details)
 }
 
 #[derive(Debug, Deserialize, Serialize)]
-pub struct Collection {
-    id: u32,
-    name: String,
-    poster_path: String,
-    backdrop_path: String,
+pub struct MovieDetails {
+    pub adult: bool,
+    pub backdrop_path: String,
+    pub genres: Vec<Genre>,
+    #[serde(skip_deserializing)]
+    pub id: String,
+    pub original_language: String,
+    pub overview: String,
+    pub poster_path: String,
+    pub release_date: String,
+    pub runtime: u32,
+    pub status: String,
+    pub tagline: String,
+    pub title: String,
+    pub vote_average: f64,
+    #[serde(skip)]
+    pub keywords: Vec<Keyword>,
+    #[serde(skip_deserializing)]
+    #[serde(rename = "watch/providers")]
+    pub watch_providers: HashMap<String, Providers>,
 }
 #[derive(Debug, Deserialize, Serialize)]
 pub struct Genre {
     pub id: u32,
     pub name: String,
-}
-
-#[derive(Debug, Deserialize, Serialize)]
-pub struct Company {
-    id: u32,
-    logo_path: String,
-    name: String,
-    origin_country: String,
-}
-
-#[derive(Debug, Deserialize, Serialize)]
-pub struct Country {
-    iso_3166_1: String,
-    name: String,
-}
-
-#[derive(Debug, Deserialize, Serialize)]
-pub struct Language {
-    english_name: String,
-    iso_639_1: String,
-    name: String,
 }
 
 #[derive(Debug, Deserialize, Serialize)]
@@ -163,50 +90,88 @@ pub struct WatchProviders {
     pub results: std::collections::HashMap<String, Providers>,
 }
 
-#[derive(Debug, Deserialize, Serialize)]
-pub struct MovieDetails {
-    pub adult: bool,
-    pub backdrop_path: Option<String>,
-    // #[serde(skip)]
-    // pub belongs_to_collection: Option<Collection>,
-    // #[serde(skip)]
-    // pub budget: u32,
-    pub genres: Vec<Genre>,
-    // #[serde(skip)]
-    // pub homepage: String,
-    pub id: u32,
-    // #[serde(skip)]
-    // pub imdb_id: String,
-    // #[serde(skip)]
-    pub original_language: String,
-    // #[serde(skip)]
-    // pub original_title: String,
-    pub overview: String,
-    // pub popularity: f64,
-    pub poster_path: Option<String>,
-    // #[serde(skip)]
-    // pub production_companies: Vec<Company>,
-    // #[serde(skip)]
-    // pub production_countries: Vec<Country>,
-    pub release_date: String,
-    // #[serde(skip)]
-    // pub revenue: u32,
-    pub runtime: u32,
-    // #[serde(skip)]
-    // pub spoken_languages: Vec<Language>,
-    // #[serde(skip)]
-    pub status: String,
-    // #[serde(skip)]
-    pub tagline: String,
-    pub title: String,
-    // #[serde(skip)]
-    // pub video: bool,
-    pub vote_average: f64,
-    // #[serde(skip)]
-    // pub vote_count: u32,
-    #[serde(skip_serializing)]
-    pub keywords: Keywords,
+async fn download_tmdb_image(tmdb_path: &str, file_path: &str) -> Result<(), Error> {
+    let token = std::env::var("TMDB_API_KEY").expect("TMDB_API_KEY must be set.");
 
-    #[serde(rename = "watch/providers")]
-    pub watch_providers: WatchProviders,
+    let data = reqwest::Client::new()
+        .get("http://image.tmdb.org/t/p/w500".to_owned() + tmdb_path)
+        .bearer_auth(token)
+        .send()
+        .await?
+        .bytes()
+        .await?;
+
+    println!("{}", data.len());
+
+    fs::File::create(file_path)
+        .expect("Error while creating file.")
+        .write_all(&data)
+        .expect("Error while writing file.");
+
+    Ok(())
+}
+
+pub async fn fetch_movies_data(page: u32) -> Result<Vec<MovieDetails>, Error> {
+    let token = std::env::var("TMDB_API_KEY").expect("TMDB_API_KEY must be set.");
+
+    let movies_response = fetch_movies(page, &token).await?;
+
+    let mut movies = vec![];
+
+    for movie in movies_response.results.iter() {
+        let result = fetch_details(movie.id, &token).await?;
+
+        if let Some(details) = result {
+            movies.push(details);
+        }
+
+        // let mut file_path = "images".to_owned();
+        // file_path.push_str(&details.poster_path.to_owned());
+        // download_tmdb_image(&details.poster_path, &file_path).await?;
+    }
+
+    Ok(movies)
+}
+
+async fn fetch_movies(page: u32, token: &str) -> Result<MoviesResponse, Error> {
+    let resp = reqwest::Client::new()
+        .get("https://api.themoviedb.org/3/movie/popular")
+        .query(&[("page", page)])
+        .bearer_auth(token)
+        .header(
+            header::ACCEPT,
+            header::HeaderValue::from_static("application/json"),
+        )
+        .send()
+        .await?;
+
+    resp.error_for_status_ref()?;
+
+    let data = resp.json().await?;
+
+    Ok(data)
+}
+
+async fn fetch_details(id: u32, token: &str) -> Result<Option<MovieDetails>, Error> {
+    let resp = reqwest::Client::new()
+        .get(format!("https://api.themoviedb.org/3/movie/{}", id))
+        .bearer_auth(token)
+        .header(
+            header::ACCEPT,
+            header::HeaderValue::from_static("application/json"),
+        )
+        .query(&[("append_to_response", "keywords,watch/providers")])
+        .send()
+        .await?;
+
+    let data = resp.json().await?;
+    let result = parse(&data);
+
+    match result {
+        Ok(details) => Ok(Some(details)),
+        Err(e) => {
+            eprintln!("Error while parsing {} fields. {}", id, e);
+            Ok(None)
+        }
+    }
 }
