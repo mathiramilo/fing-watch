@@ -17,12 +17,15 @@ def sign_up():
             return {"result": True, "token": result.token}, 200
 
     except UserExists:
-        return {"error": "Usuario ya registrado"}, 400
+        return {
+            "result": False,
+            "error": "There is an existing account with this email",
+        }, 400
     except IncorrectCredentials:
-        return {"error": "Credenciales invalidas"}, 400
+        return {"result": False, "error": "Invalid credentials"}, 400
     except:
         traceback.print_exc()
-        return {"error": "Algo salio mal"}, 500
+        return {"result": False, "error": "Something went wrong"}, 500
 
 
 @auth.post("/sign-in")
@@ -35,7 +38,11 @@ def sign_in():
         return {"result": True, "token": token}, 200
 
     except IncorrectCredentials:
-        return {"WWW-Authenticate": "Credenciales invalidas"}, 401
+        return {
+            "result": False,
+            "WWW-Authenticate": "Invalid credentials",
+            "error": "Invalid Credentials",
+        }, 401
     except:
         traceback.print_exc()
-        return {"error": "Algo salio mal"}, 500
+        return {"result": False, "error": "Something went wrong"}, 500

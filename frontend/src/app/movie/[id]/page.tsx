@@ -1,6 +1,7 @@
 'use client'
 
 import { useEffect, useState } from 'react'
+import { useRouter } from 'next/navigation'
 import Image from 'next/image'
 
 import { AiFillHeart, AiOutlineHeart, AiFillLike, AiOutlineLike, AiFillDislike, AiOutlineDislike } from 'react-icons/ai'
@@ -24,6 +25,8 @@ export default function MoviePage({ params }: { params: { id: string } }) {
   const [isDisliked, setIsDisliked] = useState(false)
 
   const { user, setUser } = useAuth()
+
+  const router = useRouter()
 
   const getMovieDetails = async () => {
     const url = SERVER_API_URL + `/movies/${params.id}`
@@ -59,6 +62,10 @@ export default function MoviePage({ params }: { params: { id: string } }) {
   }
 
   const handleAddToWatchlist = async () => {
+    if (!user) {
+      return router.push('/sign-in')
+    }
+
     const url = SERVER_API_URL + `/users/${user?.id}/watchlist/${movie?.id}`
 
     const options = {
@@ -78,6 +85,10 @@ export default function MoviePage({ params }: { params: { id: string } }) {
   }
 
   const handleRemoveFromWatchlist = async () => {
+    if (!user) {
+      return router.push('/sign-in')
+    }
+
     const url = SERVER_API_URL + `/users/${user?.id}/watchlist/${movie?.id}`
 
     const options = {
@@ -111,13 +122,13 @@ export default function MoviePage({ params }: { params: { id: string } }) {
   return (
     <main className="">
       <section
-        className={`relative z-0 flex flex-end min-h-[75vh] overflow-hidden ${similar?.length === 0 && 'min-h-[98vh]'}`}
+        className={`relative z-0 flex flex-end min-h-[80vh] overflow-hidden ${similar?.length === 0 && 'min-h-[99vh]'}`}
       >
         {/* Top Shadow */}
         <div className="absolute z-10 w-full h-12 top-0 left-0 bg-black/60 shadow-[0_10px_60px_50px_rgba(0,0,0,0.61)]"></div>
 
         {/* Bottom Shadow */}
-        <div className="absolute z-10 w-full h-28 bottom-0 left-0 bg-black shadow-[0_-10px_120px_120px_rgba(0,0,0)]"></div>
+        <div className="absolute z-10 w-full h-32 bottom-0 left-0 bg-black shadow-[0_-10px_120px_120px_rgba(0,0,0)]"></div>
 
         {/* Movie Backdrop Banner */}
         <Image
@@ -147,7 +158,7 @@ export default function MoviePage({ params }: { params: { id: string } }) {
 
           {/* Providers */}
           {providers?.UY && (
-            <div className="flex items-center gap-3 mb-5">
+            <div className="flex items-center gap-3 mb-6">
               {providers?.UY?.flatrate?.map((provider, index) => (
                 <Image
                   key={index}
@@ -171,17 +182,46 @@ export default function MoviePage({ params }: { params: { id: string } }) {
             </div>
           )}
 
-          <IconButton
-            Icon={isInWatchlist ? AiFillHeart : AiOutlineHeart}
-            text={isInWatchlist ? 'Remove from Watchlist' : 'Add to Watchlist'}
-            iconSize={22}
-            textSize="sm"
-            className="mb-8"
-            onClick={isInWatchlist ? handleRemoveFromWatchlist : handleAddToWatchlist}
-          />
+          <div className="flex items-center gap-8 mb-8">
+            <IconButton
+              Icon={isInWatchlist ? AiFillHeart : AiOutlineHeart}
+              text={isInWatchlist ? 'Remove from Watchlist' : 'Add to Watchlist'}
+              iconSize={22}
+              textSize="sm"
+              onClick={isInWatchlist ? handleRemoveFromWatchlist : handleAddToWatchlist}
+            />
+
+            <div className="flex items-center">
+              <p className="text-sm text-white/60 mr-4">How would you rate this movie?</p>
+              <IconButton
+                Icon={AiOutlineLike}
+                text=""
+                iconSize={20}
+                textSize="sm"
+              />
+              <IconButton
+                Icon={AiOutlineDislike}
+                text=""
+                iconSize={20}
+                textSize="sm"
+              />
+            </div>
+          </div>
 
           {/* Overview */}
           <p className="text-sm text-white/60 max-w-5xl">{movie?.overview}</p>
+
+          {/* Genres */}
+          <div className="flex items-center gap-4 mt-5">
+            {movie?.genres?.map(({ id, name }) => (
+              <span
+                key={id}
+                className="text-xs text-white/80 font-bold"
+              >
+                {name}
+              </span>
+            ))}
+          </div>
         </div>
       </section>
 

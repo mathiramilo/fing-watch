@@ -3,12 +3,13 @@
 import { useState, useEffect } from 'react'
 import Image from 'next/image'
 import Link from 'next/link'
+import { useRouter } from 'next/navigation'
 
 import { AiOutlineHeart, AiFillHeart, AiOutlineLike, AiFillLike, AiOutlineDislike, AiFillDislike } from 'react-icons/ai'
 
 import { SERVER_API_URL } from '@/config'
 import { IMovieDetails, IMoviesListItem } from '@/types'
-import { getMovieImageUrl } from '@/utils/movies'
+import { getMovieImageUrl, getMovieYear } from '@/utils/movies'
 
 import { User } from '@/context/AuthContext'
 import { useAuth } from '@/hooks/useAuth'
@@ -27,11 +28,16 @@ export default function MovieCard({ movie }: MovieCardProps) {
 
   const { user, setUser } = useAuth()
 
+  const router = useRouter()
+
   const handleAddToWatchlist = async (e: React.MouseEvent) => {
     e.preventDefault()
 
-    const url = SERVER_API_URL + `/users/${user?.id}/watchlist/${movie.id}`
+    if (!user) {
+      return router.push('/sign-in')
+    }
 
+    const url = SERVER_API_URL + `/users/${user?.id}/watchlist/${movie.id}`
     const options = {
       method: 'POST',
       headers: {
@@ -51,8 +57,11 @@ export default function MovieCard({ movie }: MovieCardProps) {
   const handleRemoveFromWatchlist = async (e: React.MouseEvent) => {
     e.preventDefault()
 
-    const url = SERVER_API_URL + `/users/${user?.id}/watchlist/${movie?.id}`
+    if (!user) {
+      return router.push('/sign-in')
+    }
 
+    const url = SERVER_API_URL + `/users/${user?.id}/watchlist/${movie?.id}`
     const options = {
       method: 'DELETE',
       headers: {
@@ -90,13 +99,14 @@ export default function MovieCard({ movie }: MovieCardProps) {
         alt={movie.title}
         width={768}
         height={1024}
-        className="rounded-sm group-hover:scale-105 transition-transform duration-500"
+        className="rounded-sm sm:group-hover:scale-105 transition-transform duration-500"
       />
 
       {/* Movie Overlay (On Hover) */}
       <div className="absolute top-0 left-0 w-full h-full p-5 rounded-sm bg-black/80 flex flex-col opacity-0 sm:hover:opacity-100 transition-opacity duration-200">
-        <h3 className="font-bold mb-4 text-white/90">{movie.title}</h3>
-        <p className="font-normal text-sm text-white/50 mb-5 line-clamp-6">{movie.overview}</p>
+        <h3 className="font-bold mb-1 text-white/90">{movie.title}</h3>
+        <span className="text-white/60 text-sm mb-4">{getMovieYear(movie.release_date)}</span>
+        <p className="font-normal text-sm text-white/50 mb-5 line-clamp-5">{movie.overview}</p>
 
         {/* Add to Watchlist */}
         <IconButton

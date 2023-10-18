@@ -7,7 +7,6 @@ export async function signIn(email: string, password: string) {
   }
 
   const url = SERVER_API_URL + '/auth/sign-in'
-
   const options = {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
@@ -22,7 +21,7 @@ export async function signIn(email: string, password: string) {
       localStorage.setItem('token', data.token)
       return data
     } else {
-      throw new Error('An error occurred. Please try again.')
+      throw new Error(data.error)
     }
   } catch (error) {
     throw new Error((error as Error).message)
@@ -36,7 +35,6 @@ export async function signUp(email: string, password: string) {
   }
 
   const url = SERVER_API_URL + '/auth/sign-up'
-
   const options = {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
@@ -51,7 +49,7 @@ export async function signUp(email: string, password: string) {
       localStorage.setItem('token', data.token)
       return data
     } else {
-      throw new Error('An error occurred. Please try again.')
+      throw new Error(data.error)
     }
   } catch (error) {
     throw new Error((error as Error).message)

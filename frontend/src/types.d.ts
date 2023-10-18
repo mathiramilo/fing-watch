@@ -1,7 +1,7 @@
 export interface IMoviesListItem {
   adult: boolean
   backdrop_path: string
-  genre_ids: number[]
+  genres: IGenres[]
   id: number
   original_language: string
   original_title: string
@@ -20,7 +20,7 @@ export interface IMoviesListItem {
 export interface IMovieDetails {
   adult: boolean
   backdrop_path: string
-  genres: object[]
+  genres: IGenres[]
   id: number
   original_language: string
   original_title: string
@@ -134,4 +134,9 @@ export interface ISearchResultsHit {
   highlights: Array
   text_match: number
   text_match_info: object
+}
+
+export interface IGenre {
+  id: number
+  name: string
 }

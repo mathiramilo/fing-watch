@@ -4,12 +4,13 @@ import Link from 'next/link'
 import { useEffect, useState } from 'react'
 
 import { SERVER_API_URL } from '@/config'
+import { IGenre } from '@/types'
 
 export default function GenresSlider() {
-  const [categories, setCategories] = useState<string[]>([])
+  const [genres, setGenres] = useState<IGenre[]>([])
 
-  const getCategories = async () => {
-    const url = SERVER_API_URL + '/categories'
+  const getGenres = async () => {
+    const url = SERVER_API_URL + '/genres'
 
     const options = {
       method: 'GET',
@@ -21,22 +22,22 @@ export default function GenresSlider() {
     const res = await fetch(url, options)
     const data = await res.json()
 
-    setCategories(data as string[])
+    setGenres(data?.genres as IGenre[])
   }
 
   useEffect(() => {
-    getCategories()
+    getGenres()
   }, [])
 
   return (
     <section className="flex flex-wrap gap-4">
-      {categories.map((genre) => (
+      {genres.map(({ id, name }) => (
         <Link
-          key={genre}
-          href={`/genres/${genre}`}
+          key={name}
+          href={`/genres/${name}`}
         >
           <button className="group px-8 py-2 bg-black/70 border border-stone-700 rounded-full hover:bg-stone-900 hover:text-white hover:border-stone-600 transition-colors">
-            <h3 className="text-white/80 group-hover:text-white transition-colors">{genre}</h3>
+            <h3 className="text-white/80 group-hover:text-white transition-colors">{name}</h3>
           </button>
         </Link>
       ))}

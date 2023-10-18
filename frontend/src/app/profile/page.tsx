@@ -1,6 +1,7 @@
 'use client'
 
 import React, { useEffect, useState } from 'react'
+import { useRouter } from 'next/navigation'
 
 import { SERVER_API_URL } from '@/config'
 import { IMoviesListItem } from '@/types'
@@ -13,6 +14,8 @@ export default function ProfilePage() {
   const { user } = useAuth()
 
   const [watchlist, setWatchlist] = useState<IMoviesListItem[]>([])
+
+  const router = useRouter()
 
   const fetchWatchlist = async () => {
     const url = SERVER_API_URL + `/users/${user?.id}/watchlist/movies`
@@ -33,6 +36,10 @@ export default function ProfilePage() {
   }
 
   useEffect(() => {
+    if (!user) {
+      router.back()
+    }
+
     fetchWatchlist()
   }, []) // eslint-disable-line react-hooks/exhaustive-deps
 
