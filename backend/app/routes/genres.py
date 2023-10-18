@@ -14,4 +14,6 @@ def get_genres():
         "https://api.themoviedb.org/3/genre/movie/list", headers=headers
     )
 
-    return resp.json(), resp.status_code
+    data = resp.json()
+	
+    return data["genres"], resp.status_code
