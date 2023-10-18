@@ -7,7 +7,7 @@ import { useRouter } from 'next/navigation'
 
 import { AiOutlineHeart, AiFillHeart, AiOutlineLike, AiFillLike, AiOutlineDislike, AiFillDislike } from 'react-icons/ai'
 
-import { SERVER_API_URL } from '@/config'
+import { ENV } from '@/config'
 import { IMovieDetails, IMoviesListItem } from '@/types'
 import { getMovieImageUrl, getMovieYear } from '@/utils/movies'
 
@@ -37,7 +37,7 @@ export default function MovieCard({ movie }: MovieCardProps) {
       return router.push('/sign-in')
     }
 
-    const url = SERVER_API_URL + `/users/${user?.id}/watchlist/${movie.id}`
+    const url = ENV.SERVER_API_URL + `/users/${user?.id}/watchlist/${movie.id}`
     const options = {
       method: 'POST',
       headers: {
@@ -61,7 +61,7 @@ export default function MovieCard({ movie }: MovieCardProps) {
       return router.push('/sign-in')
     }
 
-    const url = SERVER_API_URL + `/users/${user?.id}/watchlist/${movie?.id}`
+    const url = ENV.SERVER_API_URL + `/users/${user?.id}/watchlist/${movie?.id}`
     const options = {
       method: 'DELETE',
       headers: {

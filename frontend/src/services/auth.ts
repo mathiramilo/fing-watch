@@ -1,4 +1,4 @@
-import { SERVER_API_URL } from '@/config'
+import { ENV } from '@/config'
 
 export async function signIn(email: string, password: string) {
   const payload = {
@@ -6,7 +6,7 @@ export async function signIn(email: string, password: string) {
     password
   }
 
-  const url = SERVER_API_URL + '/auth/sign-in'
+  const url = ENV.SERVER_API_URL + '/auth/sign-in'
   const options = {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
@@ -34,7 +34,7 @@ export async function signUp(email: string, password: string) {
     password
   }
 
-  const url = SERVER_API_URL + '/auth/sign-up'
+  const url = ENV.SERVER_API_URL + '/auth/sign-up'
   const options = {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },

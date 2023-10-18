@@ -1,6 +1,6 @@
 import { createContext, useState, useEffect } from 'react'
 
-import { SERVER_API_URL } from '@/config'
+import { ENV } from '@/config'
 
 interface AuthProviderProps {
   children: React.ReactNode
@@ -27,7 +27,7 @@ function AuthProvider({ children }: AuthProviderProps) {
   const [token, setToken] = useState<string | null>(null)
 
   const getWatchlist = async (id: string) => {
-    const url = SERVER_API_URL + `/users/${id}/watchlist`
+    const url = ENV.SERVER_API_URL + `/users/${id}/watchlist`
 
     const options = {
       method: 'GET',

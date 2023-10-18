@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from 'react'
 
-import { SERVER_API_URL } from '@/config'
+import { ENV } from '@/config'
 import { IMoviesListItem, ISearchResults } from '@/types'
 
 import { Footer, GenresSlider, MoviesGrid, SearchBar } from '@/components'
@@ -21,7 +21,7 @@ export default function SearchPage() {
 
   const fetchSearchResults = async (inputValue: string) => {
     try {
-      const url = SERVER_API_URL + '/movies?per_page=18&q=' + inputValue
+      const url = ENV.SERVER_API_URL + '/movies?per_page=18&q=' + inputValue
 
       const options = {
         method: 'GET',
@@ -42,7 +42,7 @@ export default function SearchPage() {
   }
 
   const getTrendingSearches = async () => {
-    const url = SERVER_API_URL + '/movies/popular?n=18'
+    const url = ENV.SERVER_API_URL + '/movies/popular?n=18'
 
     const options = {
       method: 'GET',

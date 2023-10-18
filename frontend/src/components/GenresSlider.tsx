@@ -3,14 +3,14 @@
 import Link from 'next/link'
 import { useEffect, useState } from 'react'
 
-import { SERVER_API_URL } from '@/config'
+import { ENV } from '@/config'
 import { IGenre } from '@/types'
 
 export default function GenresSlider() {
   const [genres, setGenres] = useState<IGenre[]>([])
 
   const getGenres = async () => {
-    const url = SERVER_API_URL + '/genres'
+    const url = ENV.SERVER_API_URL + '/genres'
 
     const options = {
       method: 'GET',

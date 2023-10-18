@@ -3,7 +3,7 @@
 import React, { useEffect, useState } from 'react'
 import { useRouter } from 'next/navigation'
 
-import { SERVER_API_URL } from '@/config'
+import { ENV } from '@/config'
 import { IMoviesListItem } from '@/types'
 
 import { useAuth } from '@/hooks/useAuth'
@@ -18,7 +18,7 @@ export default function ProfilePage() {
   const router = useRouter()
 
   const fetchWatchlist = async () => {
-    const url = SERVER_API_URL + `/users/${user?.id}/watchlist/movies`
+    const url = ENV.SERVER_API_URL + `/users/${user?.id}/watchlist/movies`
 
     const options = {
       method: 'GET',

@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from 'react'
 
-import { SERVER_API_URL } from '@/config'
+import { ENV } from '@/config'
 import { IMoviesListItem } from '@/types'
 import { prettifyGenre } from '@/utils/movies'
 
@@ -16,7 +16,7 @@ export default function GenrePage({ params }: { params: { slug: string } }) {
   const genre = params.slug
 
   const getTrendingMovies = async () => {
-    const url = SERVER_API_URL + `/movies/latest/${genre}?n=18`
+    const url = ENV.SERVER_API_URL + `/movies/latest/${genre}?n=18`
 
     const options = {
       method: 'GET',
@@ -32,7 +32,7 @@ export default function GenrePage({ params }: { params: { slug: string } }) {
   }
 
   const getPopularMovies = async () => {
-    const url = SERVER_API_URL + `/movies/popular/${genre}?n=18`
+    const url = ENV.SERVER_API_URL + `/movies/popular/${genre}?n=18`
 
     const options = {
       method: 'GET',
@@ -48,7 +48,7 @@ export default function GenrePage({ params }: { params: { slug: string } }) {
   }
 
   const getTopRatedMovies = async () => {
-    const url = SERVER_API_URL + `/movies/neighbors/575264/${genre}?n=18`
+    const url = ENV.SERVER_API_URL + `/movies/neighbors/575264/${genre}?n=18`
     const options = {
       method: 'GET',
       headers: {

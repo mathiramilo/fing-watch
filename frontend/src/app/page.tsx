@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from 'react'
 
-import { SERVER_API_URL } from '@/config'
+import { ENV } from '@/config'
 import { IMoviesListItem } from '@/types'
 
 import { GenresSlider, MoviesSlider, Footer } from '@/components'
@@ -13,7 +13,7 @@ export default function HomePage() {
   const [topRatedMovies, setTopRatedMovies] = useState<IMoviesListItem[]>([])
 
   const getTrendingMovies = async () => {
-    const url = SERVER_API_URL + '/movies/neighbors/346698?n=18'
+    const url = ENV.SERVER_API_URL + '/movies/neighbors/346698?n=18'
 
     const options = {
       method: 'GET',
@@ -29,7 +29,7 @@ export default function HomePage() {
   }
 
   const getPopularMovies = async () => {
-    const url = SERVER_API_URL + '/movies/popular?n=18'
+    const url = ENV.SERVER_API_URL + '/movies/popular?n=18'
 
     const options = {
       method: 'GET',
@@ -45,7 +45,7 @@ export default function HomePage() {
   }
 
   const getTopRatedMovies = async () => {
-    const url = SERVER_API_URL + '/movies/neighbors/385687?n=18'
+    const url = ENV.SERVER_API_URL + '/movies/neighbors/385687?n=18'
     const options = {
       method: 'GET',
       headers: {

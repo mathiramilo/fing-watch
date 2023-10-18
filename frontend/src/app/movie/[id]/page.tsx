@@ -6,7 +6,7 @@ import Image from 'next/image'
 
 import { AiFillHeart, AiOutlineHeart, AiFillLike, AiOutlineLike, AiFillDislike, AiOutlineDislike } from 'react-icons/ai'
 
-import { SERVER_API_URL } from '@/config'
+import { ENV } from '@/config'
 import { IMovieDetails, IMovieProviders } from '@/types'
 import { getMovieAge, getMovieDuration, getMovieYear, getMovieImageUrl } from '@/utils/movies'
 
@@ -29,7 +29,7 @@ export default function MoviePage({ params }: { params: { id: string } }) {
   const router = useRouter()
 
   const getMovieDetails = async () => {
-    const url = SERVER_API_URL + `/movies/${params.id}`
+    const url = ENV.SERVER_API_URL + `/movies/${params.id}`
 
     const options = {
       method: 'GET',
@@ -46,7 +46,7 @@ export default function MoviePage({ params }: { params: { id: string } }) {
   }
 
   const getSimilarMovies = async () => {
-    const url = SERVER_API_URL + `/movies/neighbors/${params.id}?n=18`
+    const url = ENV.SERVER_API_URL + `/movies/neighbors/${params.id}?n=18`
 
     const options = {
       method: 'GET',
@@ -66,7 +66,7 @@ export default function MoviePage({ params }: { params: { id: string } }) {
       return router.push('/sign-in')
     }
 
-    const url = SERVER_API_URL + `/users/${user?.id}/watchlist/${movie?.id}`
+    const url = ENV.SERVER_API_URL + `/users/${user?.id}/watchlist/${movie?.id}`
 
     const options = {
       method: 'POST',
@@ -89,7 +89,7 @@ export default function MoviePage({ params }: { params: { id: string } }) {
       return router.push('/sign-in')
     }
 
-    const url = SERVER_API_URL + `/users/${user?.id}/watchlist/${movie?.id}`
+    const url = ENV.SERVER_API_URL + `/users/${user?.id}/watchlist/${movie?.id}`
 
     const options = {
       method: 'DELETE',
