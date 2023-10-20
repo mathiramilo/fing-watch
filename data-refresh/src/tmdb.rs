@@ -45,8 +45,11 @@ pub struct MovieDetails {
     pub genres: Vec<Genre>,
     #[serde(skip_deserializing)]
     pub id: String,
+    #[serde(skip)]
+    pub keywords: Vec<Keyword>,
     pub original_language: String,
     pub overview: String,
+    pub popularity: f64,
     pub poster_path: String,
     pub release_date: String,
     pub runtime: u32,
@@ -54,10 +57,7 @@ pub struct MovieDetails {
     pub tagline: String,
     pub title: String,
     pub vote_average: f64,
-    #[serde(skip)]
-    pub keywords: Vec<Keyword>,
     #[serde(skip_deserializing)]
-    #[serde(rename = "watch/providers")]
     pub watch_providers: HashMap<String, Providers>,
 }
 #[derive(Debug, Deserialize, Serialize)]

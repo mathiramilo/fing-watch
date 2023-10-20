@@ -36,7 +36,7 @@ impl Config {
 async fn main() -> Result<(), Error> {
     dotenv().ok();
 
-    typesense::typesense_init(true).await?;
+    typesense::typesense_init(false).await?;
 
     let mut pagging = Config::new(1440, Duration::from_secs(3));
 
