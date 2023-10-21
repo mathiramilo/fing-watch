@@ -11,6 +11,10 @@ services:
     restart: unless-stopped
     ports:
       - 27017:27017
+    environment:
+      MONGO_INITDB_DATABASE: gorse
+    volumes:
+      - mongo_data:/data/db
 
   gorse:
     image: zhenghaoz/gorse-in-one
@@ -22,7 +26,7 @@ services:
       # Use Redis as cache storage backend.
       GORSE_CACHE_STORE: redis://redis:6379
       # Use MongoDB as data storage backend.
-      GORSE_DATA_STORE: mongodb://mongo:27017/data
+      GORSE_DATA_STORE: mongodb://mongo:27017/gorse
     command: >
       -c /etc/gorse/config.toml  --log-path /var/log/gorse/master.log  --cache-path /var/lib/gorse/master_cache.data
     volumes:
@@ -41,8 +45,10 @@ services:
     depends_on:
       - typesense
       - gorse
+    volumes:
+      - images:/images
 
-  server:
+  flask:
     depends_on:
       - mongo
     build:
@@ -52,7 +58,9 @@ services:
       - 5000:5000
     env_file:
       - backend/.env
-      
+    volumes:
+      - images:/images
+
   typesense:
     image: typesense/typesense:0.25.1
     ports:
@@ -63,7 +71,19 @@ services:
       TYPESENSE_ENABLE_CORS: "true"
     volumes:
       - typesense:/data/typesense
+  # web:
+  #   build:
+  #     context: ./frontend
+  #     dockerfile: Dockerfile
+  #   ports:
+  #     - 3000:3000
+  #   env_file:
+  #     - frontend/.env.local
 
 volumes:
   typesense:
+    driver: local
+  images:
+    driver: local
+  mongo_data:
     driver: local

@@ -22,7 +22,7 @@ cache_store = "redis://localhost:6379/0"
 data_store = "mongodb://localhost:27017/data"
 
 # The naming prefix for tables (collections, keys) in databases. The default value is empty.
-table_prefix = "gorse_"
+table_prefix = ""
 
 # The naming prefix for tables (collections, keys) in cache storage databases. The default value is `table_prefix`.
 cache_table_prefix = ""

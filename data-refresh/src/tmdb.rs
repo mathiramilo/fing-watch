@@ -4,6 +4,100 @@ use std::collections::HashMap;
 use std::fs;
 use std::io::prelude::*;
 
+pub struct TheMovieDB {
+    token: String,
+    images_path: &'static str,
+}
+
+impl TheMovieDB {
+    pub fn new(token: String, images_path: &'static str) -> Self {
+        Self { token, images_path }
+    }
+
+    async fn download_tmdb_image(&self, tmdb_path: &str) -> Result<(), Error> {
+        let file_path = self.images_path.to_owned() + tmdb_path;
+
+        let buf = reqwest::Client::new()
+            .get("http://image.tmdb.org/t/p/w500".to_owned() + tmdb_path)
+            .bearer_auth(&&self.token)
+            .send()
+            .await?
+            .bytes()
+            .await?;
+
+        let res = fs::File::create(file_path).and_then(|mut f| f.write_all(&buf));
+
+        if let Err(e) = res {
+            eprintln!("{}", e);
+        }
+
+        Ok(())
+    }
+
+    pub async fn fetch_movies_details(&self, page: u32) -> Result<Vec<MovieDetails>, Error> {
+        let movies_response = self.fetch_movies(page).await?;
+
+        let mut movies = vec![];
+
+        for movie in movies_response.results.iter() {
+            let result = self.fetch_details(movie.id).await?;
+
+            // download images
+            if let Some(details) = result {
+                self.download_tmdb_image(&details.poster_path).await?;
+                self.download_tmdb_image(&details.backdrop_path).await?;
+
+                movies.push(details);
+            }
+        }
+
+        Ok(movies)
+    }
+
+    async fn fetch_movies(&self, page: u32) -> Result<MoviesResponse, Error> {
+        let resp = reqwest::Client::new()
+            .get("https://api.themoviedb.org/3/movie/popular")
+            .query(&[("page", page)])
+            .bearer_auth(&self.token)
+            .header(
+                header::ACCEPT,
+                header::HeaderValue::from_static("application/json"),
+            )
+            .send()
+            .await?;
+
+        resp.error_for_status_ref()?;
+
+        let data = resp.json().await?;
+
+        Ok(data)
+    }
+
+    async fn fetch_details(&self, id: u32) -> Result<Option<MovieDetails>, Error> {
+        let resp = reqwest::Client::new()
+            .get(format!("https://api.themoviedb.org/3/movie/{}", id))
+            .bearer_auth(&self.token)
+            .header(
+                header::ACCEPT,
+                header::HeaderValue::from_static("application/json"),
+            )
+            .query(&[("append_to_response", "keywords,watch/providers")])
+            .send()
+            .await?;
+
+        let data = resp.json().await?;
+        let result = parse(&data);
+
+        match result {
+            Ok(details) => Ok(Some(details)),
+            Err(e) => {
+                eprintln!("Error while parsing {} fields. {}", id, e);
+                Ok(None)
+            }
+        }
+    }
+}
+
 #[derive(Debug, Deserialize, Serialize)]
 pub struct MoviesResponse {
     pub page: u32,
@@ -88,90 +182,4 @@ pub struct Providers {
 #[derive(Debug, Deserialize, Serialize)]
 pub struct WatchProviders {
     pub results: std::collections::HashMap<String, Providers>,
-}
-
-async fn download_tmdb_image(tmdb_path: &str, file_path: &str) -> Result<(), Error> {
-    let token = std::env::var("TMDB_API_KEY").expect("TMDB_API_KEY must be set.");
-
-    let data = reqwest::Client::new()
-        .get("http://image.tmdb.org/t/p/w500".to_owned() + tmdb_path)
-        .bearer_auth(token)
-        .send()
-        .await?
-        .bytes()
-        .await?;
-
-    println!("{}", data.len());
-
-    fs::File::create(file_path)
-        .expect("Error while creating file.")
-        .write_all(&data)
-        .expect("Error while writing file.");
-
-    Ok(())
-}
-
-pub async fn fetch_movies_data(page: u32) -> Result<Vec<MovieDetails>, Error> {
-    let token = std::env::var("TMDB_API_KEY").expect("TMDB_API_KEY must be set.");
-
-    let movies_response = fetch_movies(page, &token).await?;
-
-    let mut movies = vec![];
-
-    for movie in movies_response.results.iter() {
-        let result = fetch_details(movie.id, &token).await?;
-
-        if let Some(details) = result {
-            movies.push(details);
-        }
-
-        // let mut file_path = "images".to_owned();
-        // file_path.push_str(&details.poster_path.to_owned());
-        // download_tmdb_image(&details.poster_path, &file_path).await?;
-    }
-
-    Ok(movies)
-}
-
-async fn fetch_movies(page: u32, token: &str) -> Result<MoviesResponse, Error> {
-    let resp = reqwest::Client::new()
-        .get("https://api.themoviedb.org/3/movie/popular")
-        .query(&[("page", page)])
-        .bearer_auth(token)
-        .header(
-            header::ACCEPT,
-            header::HeaderValue::from_static("application/json"),
-        )
-        .send()
-        .await?;
-
-    resp.error_for_status_ref()?;
-
-    let data = resp.json().await?;
-
-    Ok(data)
-}
-
-async fn fetch_details(id: u32, token: &str) -> Result<Option<MovieDetails>, Error> {
-    let resp = reqwest::Client::new()
-        .get(format!("https://api.themoviedb.org/3/movie/{}", id))
-        .bearer_auth(token)
-        .header(
-            header::ACCEPT,
-            header::HeaderValue::from_static("application/json"),
-        )
-        .query(&[("append_to_response", "keywords,watch/providers")])
-        .send()
-        .await?;
-
-    let data = resp.json().await?;
-    let result = parse(&data);
-
-    match result {
-        Ok(details) => Ok(Some(details)),
-        Err(e) => {
-            eprintln!("Error while parsing {} fields. {}", id, e);
-            Ok(None)
-        }
-    }
 }
