@@ -24,20 +24,20 @@ jobs:
           touch ./backend/.env
           echo TMDB_API_KEY=${{ secrets.TMDB_API_KEY }} >> .env
           echo GORSE_SERVICE=${{ secrets.GORSE_SERVICE }} >> .env
-          echo MONGO_DB=${{ secrets.MONGO_DB }} >> .env
+          echo MONGO_DB=${{ secrets.MONGO_CONNECTION_URI }} >> .env
           echo TYPESENSE=${{ secrets.TYPESENSE_SERVICE }} >> .env
           echo TYPESENSE_KEY=${{ secrets.TYPESENSE_KEY }} >> .env
           echo JWT_ENCODING_KEY=${{ secrets.JWT_ENCODING_KEY }} >> .env
           echo TOKEN_VALIDITY=${{ secrets.JWT_TOKEN_VALIDITY }} >> .env
-          echo USERS_DB=data >> .env
-          echo USERS_COLLECTION=users >> .env
+          echo USERS_DB=${{ vars.DATABASE_NAME }} >> .env
+          echo USERS_COLLECTION=${{ vars.USERS_COLLECTION }} >> .env
           cat .env
       - name: Create next env file.
         run: |
           touch ./frontend/.env.local
-          echo NEXT_PUBLIC_SERVER_API_URL=/api >> .env
-          echo NEXT_IMAGE_BASE_URL='https://image.tmdb.org/t/p/original/' >> .env
+          echo NEXT_PUBLIC_SERVER_API_URL=${{ vars.NEXT_PUBLIC_SERVER_API_URL }} >> .env
+          echo NEXT_IMAGE_BASE_URL=${{ vars.NEXT_IMAGE_BASE_URL }} >> .env
           cat .env
       
       - name: Docker compose up.
-        run: docker-compose up --build
+        run: docker-compose up -d --build
