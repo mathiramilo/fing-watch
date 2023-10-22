@@ -55,11 +55,9 @@ services:
       context: ./backend
       dockerfile: Dockerfile
     ports:
-      - 5000:5000
+      - 5001:5000
     env_file:
       - backend/.env
-    volumes:
-      - images:/images
 
   typesense:
     image: typesense/typesense:0.25.1
@@ -71,14 +69,24 @@ services:
       TYPESENSE_ENABLE_CORS: "true"
     volumes:
       - typesense:/data/typesense
-  # web:
-  #   build:
-  #     context: ./frontend
-  #     dockerfile: Dockerfile
-  #   ports:
-  #     - 3000:3000
-  #   env_file:
-  #     - frontend/.env.local
+
+  web:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+    ports:
+      - 3001:3000
+    env_file:
+      - frontend/.env.local
+
+  nginx:
+    image: nginx
+    ports:
+      - "80:80"
+    volumes:
+      - ./nginx.conf:/etc/nginx/nginx.conf
+      - images:/images
+    restart: always
 
 volumes:
   typesense:
