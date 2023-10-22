@@ -37,16 +37,29 @@ export default function MovieCard({ movie }: MovieCardProps) {
       return router.push('/sign-in')
     }
 
-    const url = ENV.SERVER_API_URL + `/users/${user?.id}/watchlist/${movie.id}`
+    const payload = [
+      {
+        Comment: '',
+        FeedbackType: 'star',
+        ItemId: movie?.id.toString(),
+        Timestamp: new Date().toISOString(),
+        UserId: user?.id
+      }
+    ]
+
+    const url = ENV.SERVER_API_URL + '/feedback/'
     const options = {
       method: 'POST',
       headers: {
-        accept: 'application/json'
-      }
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify(payload)
     }
 
     const res = await fetch(url, options)
     const data = await res.json()
+
+    console.log(data)
 
     if (data.result) {
       setUser({ ...user, watchlist: data?.watchlist } as User)
@@ -61,12 +74,9 @@ export default function MovieCard({ movie }: MovieCardProps) {
       return router.push('/sign-in')
     }
 
-    const url = ENV.SERVER_API_URL + `/users/${user?.id}/watchlist/${movie?.id}`
+    const url = ENV.SERVER_API_URL + `/feedback/star/${user?.id}/${movie?.id}`
     const options = {
-      method: 'DELETE',
-      headers: {
-        accept: 'application/json'
-      }
+      method: 'DELETE'
     }
 
     const res = await fetch(url, options)

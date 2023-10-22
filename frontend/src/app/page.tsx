@@ -13,7 +13,7 @@ export default function HomePage() {
   const [topRatedMovies, setTopRatedMovies] = useState<IMoviesListItem[]>([])
 
   const getTrendingMovies = async () => {
-    const url = ENV.SERVER_API_URL + '/movies/neighbors/346698?n=18'
+    const url = ENV.SERVER_API_URL + '/movies/neighbors/980489?n=18'
 
     const options = {
       method: 'GET',
@@ -71,6 +71,7 @@ export default function HomePage() {
         <h2 className="font-bold text-white/90 mb-4">Browse by Genre</h2>
         <GenresSlider />
       </section>
+
       <MoviesSlider
         title="Recommended for You"
         movies={trendingMovies}

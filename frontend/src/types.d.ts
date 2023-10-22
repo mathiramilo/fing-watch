@@ -140,3 +140,10 @@ export interface IGenre {
   id: number
   name: string
 }
+
+export interface IFeedbackPayload {
+  FeedbackType: string
+  UserId: string
+  ItemId: string
+  Timestamp: string
+}

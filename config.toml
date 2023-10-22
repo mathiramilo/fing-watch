@@ -59,10 +59,10 @@ n_jobs = 1
 meta_timeout = "10s"
 
 # Username for the master node dashboard.
-dashboard_user_name = "webir"
+dashboard_user_name = ""
 
 # Password for the master node dashboard.
-dashboard_password = "webir"
+dashboard_password = ""
 
 # Secret key for admin APIs (SSL required).
 admin_api_key = ""

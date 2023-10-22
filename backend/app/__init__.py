@@ -2,8 +2,8 @@ from flask import Flask
 from flask_cors import CORS
 
 from .routes.auth import auth
-from .routes.genres import genres
 from .routes.feedback import feedback
+from .routes.genres import genres
 from .routes.movies import movies
 from .routes.recommend import recommend
 from .routes.users import users
@@ -12,7 +12,7 @@ from .routes.users import users
 def create_app():
     app = Flask(__name__)
 
-    cors = CORS(app, resources={r"/api/*": {"origins": "*"}})
+    CORS(app, resources={r"/api/*": {"origins": "*"}})
 
     app.register_blueprint(auth, url_prefix="/api/auth")
     app.register_blueprint(movies, url_prefix="/api/movies")
