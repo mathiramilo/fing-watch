@@ -18,7 +18,7 @@ jobs:
           echo GORSE_ENTRY_POINT=${{ secrets.GORSE_SERVICE }} >> ./data-refresh/.env
           echo TYPESENSE=${{ secrets.TYPESENSE_SERVICE }} >> ./data-refresh/.env
           echo TYPESENSE_KEY=${{ secrets.TYPESENSE_KEY }} >> ./data-refresh/.env
-          cat .env
+          cat ./data-refresh/.env
       - name: Create flask env file.
         run: |
           touch ./backend/.env
@@ -31,13 +31,13 @@ jobs:
           echo TOKEN_VALIDITY=${{ secrets.JWT_TOKEN_VALIDITY }} >> ./backend/.env
           echo USERS_DB=${{ vars.DATABASE_NAME }} >> ./backend/.env
           echo USERS_COLLECTION=${{ vars.USERS_COLLECTION }} >> ./backend/.env
-          cat .env
+          cat ./backend/.env
       - name: Create next env file.
         run: |
           touch ./frontend/.env.local
           echo NEXT_PUBLIC_SERVER_API_URL=${{ vars.NEXT_PUBLIC_SERVER_API_URL }} >> ./frontend/.env.local
           echo NEXT_IMAGE_BASE_URL=${{ vars.NEXT_IMAGE_BASE_URL }} >> ./frontend/.env.local
-          cat .env
+          cat ./frontend/.env.local
       
       - name: Docker compose up.
         run: docker-compose up -d --build
