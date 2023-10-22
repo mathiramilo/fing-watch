@@ -21,16 +21,24 @@ from ..utils.constants import (
 def create_user(user: User, password, labels=[], suscribe=[]):
     if user.email == None or user.email == "" or password == None or password == "":
         raise IncorrectCredentials()
+
     client = MongoClient(MONGO_URI)
     db = client[USERS_DB]
     users = db[USERS_COLLECTION]
+
     newUserId = str(uuid.uuid4())
     usr = users.find_one({"email": user.email})
     if usr != None:
         raise UserExists()
     user.setId(newUserId)
     user.setPassword(password)
+
+    print("Before insert", user.id)
+
+    # ERROR: DuplicateKeyError
     users.insert_one(user.toCollectionEntry())
+
+    print("After insert")
 
     # Create user for gorse - set the id of the user as userId in gorse
     gorse_users = db["gorse_users"]

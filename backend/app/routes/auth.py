@@ -12,6 +12,7 @@ auth = Blueprint("auth", __name__)
 def sign_up():
     try:
         content = request.get_json()
+        print(content)
         result = create_user(User(email=content["email"]), content["password"])
         if result.result:
             return {"result": True, "token": result.token}, 200

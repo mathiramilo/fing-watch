@@ -7,20 +7,24 @@ import { ENV } from '@/config'
 import { IMoviesListItem } from '@/types'
 import { prettifyGenre } from '@/utils/movies'
 
+import { useAuth } from '@/hooks/useAuth'
+
 import { MoviesSlider, Footer } from '@/components'
 
 export default function GenrePage({ params }: { params: { id: string } }) {
-  const [trendingMovies, setTrendingMovies] = useState<IMoviesListItem[]>([])
+  const [recommendedMovies, setRecommendedMovies] = useState<IMoviesListItem[]>([])
   const [popularMovies, setPopularMovies] = useState<IMoviesListItem[]>([])
-  const [topRatedMovies, setTopRatedMovies] = useState<IMoviesListItem[]>([])
+  const [latestMovies, setLatestMovies] = useState<IMoviesListItem[]>([])
 
   const searchParams = useSearchParams()
 
   const genreId = params.id
   const genreName = searchParams.get('name')
 
-  const getTrendingMovies = async () => {
-    const url = ENV.SERVER_API_URL + `/movies/latest/${genreId}?n=18`
+  const { user } = useAuth()
+
+  const getRecommendedMovies = async (userId: string) => {
+    const url = ENV.SERVER_API_URL + `/recommend/${userId}/item_based/${genreId}?n=18`
 
     const options = {
       method: 'GET',
@@ -32,7 +36,7 @@ export default function GenrePage({ params }: { params: { id: string } }) {
     const res = await fetch(url, options)
     const data = await res.json()
 
-    setTrendingMovies(data as IMoviesListItem[])
+    setRecommendedMovies(data as IMoviesListItem[])
   }
 
   const getPopularMovies = async () => {
@@ -51,8 +55,8 @@ export default function GenrePage({ params }: { params: { id: string } }) {
     setPopularMovies(data as IMoviesListItem[])
   }
 
-  const getTopRatedMovies = async () => {
-    const url = ENV.SERVER_API_URL + `/movies/neighbors/575264/${genreId}?n=18`
+  const getLatestMovies = async () => {
+    const url = ENV.SERVER_API_URL + `/movies/latest/${genreId}?n=18`
     const options = {
       method: 'GET',
       headers: {
@@ -63,21 +67,24 @@ export default function GenrePage({ params }: { params: { id: string } }) {
     const res = await fetch(url, options)
     const data = await res.json()
 
-    setTopRatedMovies(data as IMoviesListItem[])
+    setLatestMovies(data as IMoviesListItem[])
   }
 
   useEffect(() => {
-    getTrendingMovies()
+    if (user) {
+      getRecommendedMovies(user.id)
+    }
     getPopularMovies()
-    getTopRatedMovies()
-  }, [genreId]) // eslint-disable-line react-hooks/exhaustive-deps
+    getLatestMovies()
+  }, [genreId, user]) // eslint-disable-line react-hooks/exhaustive-deps
 
   return (
     <main className="w-[90%] mx-auto sm:w-full sm:px-12 pt-[4.2em]">
       <h1 className="text-lg font-bold text-white/50 text-center mb-16">{prettifyGenre(genreName || genreId)}</h1>
+
       <MoviesSlider
         title="Recommended for You"
-        movies={trendingMovies}
+        movies={recommendedMovies}
         className="my-12"
       />
       <MoviesSlider
@@ -86,8 +93,8 @@ export default function GenrePage({ params }: { params: { id: string } }) {
         className="mb-12"
       />
       <MoviesSlider
-        title="Top Rated Movies"
-        movies={topRatedMovies}
+        title="Latest Movies"
+        movies={latestMovies}
         className="mb-12"
       />
 

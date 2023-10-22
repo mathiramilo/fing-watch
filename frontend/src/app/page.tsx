@@ -5,15 +5,19 @@ import { useState, useEffect } from 'react'
 import { ENV } from '@/config'
 import { IMoviesListItem } from '@/types'
 
+import { useAuth } from '@/hooks/useAuth'
+
 import { GenresSlider, MoviesSlider, Footer } from '@/components'
 
 export default function HomePage() {
-  const [trendingMovies, setTrendingMovies] = useState<IMoviesListItem[]>([])
+  const [recommendedMovies, setRecommendedMovies] = useState<IMoviesListItem[]>([])
   const [popularMovies, setPopularMovies] = useState<IMoviesListItem[]>([])
-  const [topRatedMovies, setTopRatedMovies] = useState<IMoviesListItem[]>([])
+  const [latestMovies, setLatestMovies] = useState<IMoviesListItem[]>([])
 
-  const getTrendingMovies = async () => {
-    const url = ENV.SERVER_API_URL + '/movies/neighbors/980489?n=18'
+  const { user } = useAuth()
+
+  const getRecommendedMovies = async (userId: string) => {
+    const url = ENV.SERVER_API_URL + `/recommend/${userId}/item_based?n=18`
 
     const options = {
       method: 'GET',
@@ -25,7 +29,7 @@ export default function HomePage() {
     const res = await fetch(url, options)
     const data = await res.json()
 
-    setTrendingMovies(data as IMoviesListItem[])
+    setRecommendedMovies(data as IMoviesListItem[])
   }
 
   const getPopularMovies = async () => {
@@ -44,8 +48,8 @@ export default function HomePage() {
     setPopularMovies(data as IMoviesListItem[])
   }
 
-  const getTopRatedMovies = async () => {
-    const url = ENV.SERVER_API_URL + '/movies/neighbors/385687?n=18'
+  const getLatestMovies = async () => {
+    const url = ENV.SERVER_API_URL + '/movies/latest?n=18'
     const options = {
       method: 'GET',
       headers: {
@@ -56,14 +60,16 @@ export default function HomePage() {
     const res = await fetch(url, options)
     const data = await res.json()
 
-    setTopRatedMovies(data as IMoviesListItem[])
+    setLatestMovies(data as IMoviesListItem[])
   }
 
   useEffect(() => {
-    getTrendingMovies()
+    if (user) {
+      getRecommendedMovies(user.id)
+    }
     getPopularMovies()
-    getTopRatedMovies()
-  }, [])
+    getLatestMovies()
+  }, [user])
 
   return (
     <main className="w-[90%] mx-auto sm:w-full sm:px-12 pt-32">
@@ -74,7 +80,7 @@ export default function HomePage() {
 
       <MoviesSlider
         title="Recommended for You"
-        movies={trendingMovies}
+        movies={recommendedMovies}
         className="my-12"
       />
       <MoviesSlider
@@ -83,8 +89,8 @@ export default function HomePage() {
         className="mb-12"
       />
       <MoviesSlider
-        title="Top Rated Movies"
-        movies={topRatedMovies}
+        title="Latest Movies"
+        movies={latestMovies}
         className="mb-12"
       />
 
