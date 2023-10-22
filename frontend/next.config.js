@@ -1,8 +1,9 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
   images: {
-    domains: ['image.tmdb.org']
-  }
+    domains: ['localhost:80']
+  },
+  output: 'standalone',
 }
 
 module.exports = nextConfig
