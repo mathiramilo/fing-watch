@@ -18,6 +18,7 @@ async fn main() -> Result<(), Error> {
 
     loop {
         let movies = tmdb_client.fetch_movies_details(page).await?;
+        println!("Fetching page: {}", page);
 
         for movie in movies.iter() {
             println!("{}: {}", movie.id, movie.title);
@@ -25,8 +26,9 @@ async fn main() -> Result<(), Error> {
             typesense::typesense_post(movie).await?;
             gorse::gorse_post(movie).await?;
 
-            thread::sleep(Duration::from_secs(5));
-            page = (page % 500) + 1; // max page must be 500
+            thread::sleep(Duration::from_secs(10));
         }
+
+        page = (page % 500) + 1; // max page must be 500
     }
 }
