@@ -41,10 +41,15 @@ def create_user(user: User, password, labels=[], suscribe=[]):
     print("After insert")
 
     # Create user for gorse - set the id of the user as userId in gorse
-    gorse_users = db["gorse_users"]
-    gorse_users.insert_one(
-        {"userid": newUserId, "comment": "", "labels": labels, "subscribe": suscribe}
-    )
+    user_endpoint = GORSE_API + "/user"
+    json_data = {
+        "Comment": "",
+        "Labels": labels,
+        "Subscribe": suscribe,
+        "UserId": newUserId,
+    }
+    headers = {"Content-type": "application/json"}
+    requests.post(user_endpoint, json=json_data, headers=headers)
 
     token = build_token(user)
     return RegisterResult(True, token)
