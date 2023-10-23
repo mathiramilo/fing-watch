@@ -38,6 +38,12 @@ jobs:
           echo NEXT_PUBLIC_SERVER_API_URL=${{ vars.NEXT_PUBLIC_SERVER_API_URL }} >> ./frontend/.env.local
           echo NEXT_IMAGE_BASE_URL=${{ vars.NEXT_IMAGE_BASE_URL }} >> ./frontend/.env.local
           cat ./frontend/.env.local
-      
+      - name: Create docker-compose env file.
+        run: |
+          touch .env
+          echo MONGO_INITDB_ROOT_USERNAME=${{ secrets.MONGO_INITDB_ROOT_USERNAME }} >> .env
+          echo MONGO_INITDB_ROOT_PASSWORD=${{ secretes.MONGO_INITDB_ROOT_PASSWORD }} >> .env
+          cat .env
+
       - name: Docker compose up.
         run: docker-compose up -d --build
