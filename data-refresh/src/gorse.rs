@@ -27,7 +27,7 @@ pub async fn gorse_post(movie: &MovieDetails) -> Result<(), Error> {
         hidden: false,
         categories: movie.genres.iter().map(|g| g.id.to_string()).collect(),
         timestamp: movie.release_date.clone(),
-        labels: movie.keywords.iter().map(|k| k.name.to_owned()).collect(),
+        labels: movie.keywords.iter().map(|k| k.to_owned()).collect(),
         comment: movie.title.clone(),
     };
 

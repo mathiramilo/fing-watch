@@ -109,11 +109,6 @@ pub struct MovieID {
 }
 
 #[derive(Debug, Deserialize, Serialize)]
-pub struct Keywords {
-    pub keywords: Vec<Keyword>,
-}
-
-#[derive(Debug, Deserialize, Serialize)]
 pub struct Keyword {
     pub id: u32,
     pub name: String,
@@ -124,8 +119,11 @@ pub fn parse(json: &HashMap<String, serde_json::Value>) -> Result<MovieDetails, 
     let mut details: MovieDetails = serde_json::from_str(&s)?;
 
     details.id = json["id"].to_string();
+
+    let keywords: Vec<Keyword> = Deserialize::deserialize(&json["keywords"]["keywords"])?;
+    details.keywords = keywords.iter().map(|k| k.name.to_owned()).collect();
+
     details.watch_providers = Deserialize::deserialize(&json["watch/providers"]["results"])?;
-    details.keywords = Deserialize::deserialize(&json["keywords"]["keywords"])?;
 
     Ok(details)
 }
@@ -137,8 +135,8 @@ pub struct MovieDetails {
     pub genres: Vec<Genre>,
     #[serde(skip_deserializing)]
     pub id: String,
-    #[serde(skip)]
-    pub keywords: Vec<Keyword>,
+    #[serde(skip_deserializing)]
+    pub keywords: Vec<String>,
     pub original_language: String,
     pub overview: String,
     pub popularity: f64,

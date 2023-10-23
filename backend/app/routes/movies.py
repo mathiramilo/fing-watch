@@ -14,7 +14,7 @@ def process_request(endpoint):
 
     resp = requests.get(GORSE_API + endpoint, params=parms)
     if not resp.ok:
-        return {"message": "Error"}, 404  # TODO: ???
+        return resp.content, resp.status_code
 
     # get movies id from gorse
     movies_ids = [item["Id"] for item in resp.json()]
@@ -56,14 +56,15 @@ def get_neighbors_by_genre(tmdb_id, genre_id):
 
 @movies.get("/")
 def query():
-    url = os.environ["TYPESENSE"] + "/collections/movies/documents/search"
+    url = f"{os.environ['TYPESENSE']}/collections/movies/documents/search"
     query = {
         "q": request.args.get("q"),
         "per_page": request.args.get("per_page", 10),
-        "query_by": "title",
+        "query_by": "title,overview,keywords",
         "prioritize_token_position": "true",
-        "sort_by": "popularity:desc",
-        "exclude_fields": "watch_providers",
+        "sort_by": "vote_average:desc",
+        "query_by_weights": "13,7,3",
+        "exclude_fields": "watch_providers,keywords",
     }
     headers = {"X-TYPESENSE-API-KEY": os.environ["TYPESENSE_KEY"]}
     resp = requests.get(url, params=query, headers=headers)
