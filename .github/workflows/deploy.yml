@@ -42,7 +42,7 @@ jobs:
         run: |
           touch .env
           echo MONGO_INITDB_ROOT_USERNAME=${{ secrets.MONGO_INITDB_ROOT_USERNAME }} >> .env
-          echo MONGO_INITDB_ROOT_PASSWORD=${{ secretes.MONGO_INITDB_ROOT_PASSWORD }} >> .env
+          echo MONGO_INITDB_ROOT_PASSWORD=${{ secrets.MONGO_INITDB_ROOT_PASSWORD }} >> .env
           cat .env
 
       - name: Docker compose up.
