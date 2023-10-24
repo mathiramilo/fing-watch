@@ -3,6 +3,7 @@ use serde::{Deserialize, Serialize};
 use std::collections::HashMap;
 use std::fs;
 use std::io::prelude::*;
+use tokio::join;
 
 pub struct TheMovieDB {
     token: String,
@@ -14,12 +15,11 @@ impl TheMovieDB {
         Self { token, images_path }
     }
 
-    async fn download_tmdb_image(&self, tmdb_path: &str) -> Result<(), Error> {
-        let file_path = self.images_path.to_owned() + tmdb_path;
+    async fn download_tmdb_image(&self, size: &str, path: &str) -> Result<(), Error> {
+        let file_path = self.images_path.to_owned() + path;
 
         let buf = reqwest::Client::new()
-            .get("http://image.tmdb.org/t/p/w500".to_owned() + tmdb_path)
-            .bearer_auth(&&self.token)
+            .get("http://image.tmdb.org/t/p/".to_owned() + size + path)
             .send()
             .await?
             .bytes()
@@ -44,8 +44,12 @@ impl TheMovieDB {
 
             // download images
             if let Some(details) = result {
-                self.download_tmdb_image(&details.poster_path).await?;
-                self.download_tmdb_image(&details.backdrop_path).await?;
+                let (poster, backdrop) = join!(
+                    self.download_tmdb_image("original", &details.poster_path),
+                    self.download_tmdb_image("original", &details.backdrop_path)
+                );
+                poster?;
+                backdrop?;
 
                 movies.push(details);
             }
