@@ -44,8 +44,8 @@ impl TheMovieDB {
 
             // download images
             if let Some(details) = result {
-                // self.download_tmdb_image(&details.poster_path).await?;
-                // self.download_tmdb_image(&details.backdrop_path).await?;
+                self.download_tmdb_image(&details.poster_path).await?;
+                self.download_tmdb_image(&details.backdrop_path).await?;
 
                 movies.push(details);
             }

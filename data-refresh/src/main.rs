@@ -26,7 +26,7 @@ async fn main() -> Result<(), Error> {
             typesense::typesense_post(movie).await?;
             gorse::gorse_post(movie).await?;
 
-            thread::sleep(Duration::from_secs(10));
+            thread::sleep(Duration::from_secs(5));
         }
 
         page = (page % 500) + 1; // max page must be 500
