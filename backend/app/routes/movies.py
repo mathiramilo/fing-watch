@@ -57,17 +57,16 @@ def get_neighbors_by_genre(tmdb_id, genre_id):
 @movies.get("/")
 def query():
     url = f"{os.environ['TYPESENSE']}/collections/movies/documents/search"
-    query = {
+    params = {
         "q": request.args.get("q"),
         "per_page": request.args.get("per_page", 10),
         "query_by": "title,overview,keywords",
         "prioritize_token_position": "true",
-        "sort_by": "vote_average:desc",
-        "query_by_weights": "13,7,3",
+        "query_by_weights": "64,16,4",
         "exclude_fields": "watch_providers,keywords",
     }
     headers = {"X-TYPESENSE-API-KEY": os.environ["TYPESENSE_KEY"]}
-    resp = requests.get(url, params=query, headers=headers)
+    resp = requests.get(url, params=params, headers=headers)
 
     return resp.content, resp.status_code
 

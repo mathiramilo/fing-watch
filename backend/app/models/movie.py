@@ -12,7 +12,7 @@ def get_movie_info(tmdb_id, all_fields=False):
     if not resp.ok:
         raise Exception("Movie not found.")
 
-    excluded_fields = None if all_fields else ["watch_providers"]
+    excluded_fields = None if all_fields else ["watch_providers", "keywords"]
 
     json = resp.json()
 
@@ -23,5 +23,4 @@ def get_movie_info(tmdb_id, all_fields=False):
 
 
 def get_movies(movies_ids):
-    print(movies_ids)
     return [get_movie_info(tmdb_id) for tmdb_id in movies_ids]
