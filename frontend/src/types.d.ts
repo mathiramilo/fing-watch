@@ -141,9 +141,15 @@ export interface IGenre {
   name: string
 }
 
-export interface IFeedbackPayload {
-  FeedbackType: string
-  UserId: string
-  ItemId: string
-  Timestamp: string
+export enum FeedbackTypes {
+  Watchlist = 'watchlist',
+  Like = 'like',
+  Dislike = 'dislike'
+}
+
+export enum RecommenderTypes {
+  Final = 'final',
+  Collaborative = 'collaborative',
+  UserBased = 'user_based',
+  ItemBased = 'item_based'
 }

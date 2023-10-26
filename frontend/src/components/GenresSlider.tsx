@@ -3,32 +3,27 @@
 import { useEffect, useState } from 'react'
 import Link from 'next/link'
 
-import { ENV } from '@/config'
 import { IGenre } from '@/types'
+import { getGenres } from '@/services/genres'
 
 import CustomSlider from './CustomSlider'
 
 export default function GenresSlider() {
   const [genres, setGenres] = useState<IGenre[]>([])
 
-  const getGenres = async () => {
-    const url = ENV.SERVER_API_URL + '/genres'
+  const fetchGenres = async () => {
+    try {
+      const data = await getGenres()
 
-    const options = {
-      method: 'GET',
-      headers: {
-        accept: 'application/json'
-      }
+      setGenres(data as IGenre[])
+    } catch (error) {
+      // Error handling
+      console.log(error)
     }
-
-    const res = await fetch(url, options)
-    const data = await res.json()
-
-    setGenres(data as IGenre[])
   }
 
   useEffect(() => {
-    getGenres()
+    fetchGenres()
   }, [])
 
   return (

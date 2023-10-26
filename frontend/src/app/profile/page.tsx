@@ -3,9 +3,8 @@
 import React, { useEffect, useState } from 'react'
 import { useRouter } from 'next/navigation'
 
-import { ENV } from '@/config'
 import { IMoviesListItem } from '@/types'
-
+import { getUserFeedback } from '@/services/feedback'
 import { useAuth } from '@/hooks/useAuth'
 
 import { MoviesGrid, Footer } from '@/components'
@@ -18,20 +17,19 @@ export default function ProfilePage() {
   const router = useRouter()
 
   const fetchWatchlist = async () => {
-    const url = ENV.SERVER_API_URL + `/users/${user?.id}/watchlist/movies`
-
-    const options = {
-      method: 'GET',
-      headers: {
-        'Content-Type': 'application/json'
-      }
+    if (!user) {
+      return router.back()
     }
 
-    const res = await fetch(url, options)
-    const data = await res.json()
+    try {
+      const data = await getUserFeedback(user.id)
 
-    if (data?.result) {
-      setWatchlist(data?.watchlist?.reverse())
+      if (data) {
+        setWatchlist(data?.watchlist?.reverse())
+      }
+    } catch (error) {
+      // Error handling
+      console.log(error)
     }
   }
 

@@ -7,10 +7,9 @@ import Image from 'next/image'
 import { AiFillHeart, AiOutlineHeart, AiFillLike, AiOutlineLike, AiFillDislike, AiOutlineDislike } from 'react-icons/ai'
 
 import { ENV } from '@/config'
-import { IMovieDetails, IMovieProviders } from '@/types'
+import { IMovieDetails, IMovieProviders, FeedbackTypes } from '@/types.d'
 import { getMovieAge, getMovieDuration, getMovieYear, getMovieImageUrl } from '@/utils/movies'
-
-import { User } from '@/context/AuthContext'
+import { addFeedback, removeFeedback, getMovieFeedback } from '@/services/feedback'
 import { useAuth } from '@/hooks/useAuth'
 
 import { CustomRating, IconButton, MoviesSlider, Footer } from '@/components'
@@ -24,7 +23,7 @@ export default function MoviePage({ params }: { params: { id: string } }) {
   const [isLiked, setIsLiked] = useState(false)
   const [isDisliked, setIsDisliked] = useState(false)
 
-  const { user, setUser } = useAuth()
+  const { user } = useAuth()
 
   const router = useRouter()
 
@@ -61,55 +60,80 @@ export default function MoviePage({ params }: { params: { id: string } }) {
     setSimilar(data as IMovieDetails[])
   }
 
-  const handleAddToWatchlist = async () => {
+  const handleAddFeedback = async (e: React.MouseEvent, type: FeedbackTypes) => {
+    e.preventDefault()
+
     if (!user) {
       return router.push('/sign-in')
     }
 
-    const url = ENV.SERVER_API_URL + `/users/${user?.id}/watchlist/${movie?.id}`
+    try {
+      const data = await addFeedback(user.id, params.id, type)
 
-    const options = {
-      method: 'POST',
-      headers: {
-        accept: 'application/json'
+      if (data?.RowAffected === 1) {
+        switch (type) {
+          case FeedbackTypes.Watchlist:
+            setIsInWatchlist(true)
+            break
+          case FeedbackTypes.Like:
+            setIsLiked(true)
+            break
+          case FeedbackTypes.Dislike:
+            setIsDisliked(true)
+            break
+        }
       }
-    }
-
-    const res = await fetch(url, options)
-    const data = await res.json()
-
-    if (data?.result) {
-      setUser({ ...user, watchlist: data?.watchlist } as User)
-      setIsInWatchlist(true)
+    } catch (error) {
+      // Error handling
+      console.log(error)
     }
   }
 
-  const handleRemoveFromWatchlist = async () => {
+  const handleRemoveFeedback = async (e: React.MouseEvent, type: FeedbackTypes) => {
+    e.preventDefault()
+
     if (!user) {
       return router.push('/sign-in')
     }
 
-    const url = ENV.SERVER_API_URL + `/users/${user?.id}/watchlist/${movie?.id}`
+    try {
+      const data = await removeFeedback(user.id, params.id, type)
 
-    const options = {
-      method: 'DELETE',
-      headers: {
-        accept: 'application/json'
+      if (data?.RowAffected === 1) {
+        switch (type) {
+          case FeedbackTypes.Watchlist:
+            setIsInWatchlist(false)
+            break
+          case FeedbackTypes.Like:
+            setIsLiked(false)
+            break
+          case FeedbackTypes.Dislike:
+            setIsDisliked(false)
+            break
+        }
       }
-    }
-
-    const res = await fetch(url, options)
-    const data = await res.json()
-
-    if (data?.result) {
-      setUser({ ...user, watchlist: data?.watchlist } as User)
-      setIsInWatchlist(false)
+    } catch (error) {
+      // Error handling
+      console.log(error)
     }
   }
 
   const loadInitialState = async () => {
-    if (user?.watchlist?.find((id) => id === params.id)) {
-      setIsInWatchlist(true)
+    if (!user) {
+      return
+    }
+
+    try {
+      const data = await getMovieFeedback(user.id, params.id)
+
+      if (data) {
+        setIsInWatchlist(data.includes(FeedbackTypes.Watchlist))
+        setIsLiked(data.includes(FeedbackTypes.Like))
+        setIsDisliked(data.includes(FeedbackTypes.Dislike))
+      }
+    } catch (error) {
+      // Error handling
+      console.log(error)
     }
   }
 
@@ -182,28 +206,44 @@ export default function MoviePage({ params }: { params: { id: string } }) {
             </div>
           )}
 
+          {/* Watchlist */}
           <div className="flex items-center gap-8 mb-8">
             <IconButton
               Icon={isInWatchlist ? AiFillHeart : AiOutlineHeart}
               text={isInWatchlist ? 'Remove from Watchlist' : 'Add to Watchlist'}
               iconSize={22}
               textSize="sm"
-              onClick={isInWatchlist ? handleRemoveFromWatchlist : handleAddToWatchlist}
+              onClick={
+                isInWatchlist
+                  ? (e) => handleRemoveFeedback(e, FeedbackTypes.Watchlist)
+                  : (e) => handleAddFeedback(e, FeedbackTypes.Watchlist)
+              }
             />
 
+            {/* Like/Dislike */}
             <div className="flex items-center">
               <p className="text-sm text-white/60 mr-4">How would you rate this movie?</p>
               <IconButton
-                Icon={AiOutlineLike}
+                Icon={isLiked ? AiFillLike : AiOutlineLike}
                 text=""
                 iconSize={20}
                 textSize="sm"
+                onClick={
+                  isLiked
+                    ? (e) => handleRemoveFeedback(e, FeedbackTypes.Like)
+                    : (e) => handleAddFeedback(e, FeedbackTypes.Like)
+                }
               />
               <IconButton
-                Icon={AiOutlineDislike}
+                Icon={isDisliked ? AiFillDislike : AiOutlineDislike}
                 text=""
                 iconSize={20}
                 textSize="sm"
+                onClick={
+                  isDisliked
+                    ? (e) => handleRemoveFeedback(e, FeedbackTypes.Dislike)
+                    : (e) => handleAddFeedback(e, FeedbackTypes.Dislike)
+                }
               />
             </div>
           </div>

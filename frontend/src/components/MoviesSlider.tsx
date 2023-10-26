@@ -10,6 +10,10 @@ interface MoviesSliderProps {
 }
 
 export default function MoviesSlider({ title, movies = [], className }: MoviesSliderProps) {
+  if (movies.length === 0) {
+    return null
+  }
+
   return (
     <section className={className}>
       <h2 className="font-bold text-white/90 mb-4">{title}</h2>

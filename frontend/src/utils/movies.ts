@@ -12,7 +12,6 @@ export const getMovieAge = (adult: boolean): string => (adult ? '18+' : '13+')
 
 export const getMovieImageUrl = (path: string) => TMDB_IMAGE_BASE_URL + path
 
-// Not used at the moment
 export const formatGenre = (str: string) => {
   if (str.includes('%20')) {
     const words = str.split('%20')

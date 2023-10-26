@@ -1,8 +1,9 @@
-import requests
 import datetime
-from flask import Blueprint
-from ..models.movie import get_movie_info
 
+import requests
+from flask import Blueprint
+
+from ..models.movie import get_movie_info
 from ..utils.constants import GORSE_API
 
 feedback = Blueprint("feedback", __name__)

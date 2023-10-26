@@ -7,15 +7,13 @@ import { useRouter } from 'next/navigation'
 
 import { AiOutlineHeart, AiFillHeart, AiOutlineLike, AiFillLike, AiOutlineDislike, AiFillDislike } from 'react-icons/ai'
 
-import { ENV } from '@/config'
-import { IMovieDetails, IMoviesListItem } from '@/types'
+import { FeedbackTypes, IMovieDetails, IMoviesListItem } from '@/types.d'
 import { getMovieImageUrl, getMovieYear } from '@/utils/movies'
-
-import { User } from '@/context/AuthContext'
+import { addFeedback, getMovieFeedback, removeFeedback } from '@/services/feedback'
 import { useAuth } from '@/hooks/useAuth'
 
-import CustomRating from '@/components/CustomRating'
-import IconButton from '@/components/IconButton'
+import CustomRating from './CustomRating'
+import IconButton from './IconButton'
 
 interface MovieCardProps {
   movie: IMoviesListItem | IMovieDetails
@@ -26,71 +24,84 @@ export default function MovieCard({ movie }: MovieCardProps) {
   const [isLiked, setIsLiked] = useState(false)
   const [isDisliked, setIsDisliked] = useState(false)
 
-  const { user, setUser } = useAuth()
+  const { user } = useAuth()
 
   const router = useRouter()
 
-  const handleAddToWatchlist = async (e: React.MouseEvent) => {
+  const handleAddFeedback = async (e: React.MouseEvent, type: FeedbackTypes) => {
     e.preventDefault()
 
     if (!user) {
       return router.push('/sign-in')
     }
 
-    const payload = [
-      {
-        Comment: '',
-        FeedbackType: 'star',
-        ItemId: movie?.id.toString(),
-        Timestamp: new Date().toISOString(),
-        UserId: user?.id
+    try {
+      const data = await addFeedback(user.id, movie.id, type)
+
+      if (data?.RowAffected === 1) {
+        switch (type) {
+          case FeedbackTypes.Watchlist:
+            setIsInWatchlist(true)
+            break
+          case FeedbackTypes.Like:
+            setIsLiked(true)
+            break
+          case FeedbackTypes.Dislike:
+            setIsDisliked(true)
+            break
+        }
       }
-    ]
-
-    const url = ENV.SERVER_API_URL + '/feedback/'
-    const options = {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json'
-      },
-      body: JSON.stringify(payload)
-    }
-
-    const res = await fetch(url, options)
-    const data = await res.json()
-
-    console.log(data)
-
-    if (data.result) {
-      setUser({ ...user, watchlist: data?.watchlist } as User)
-      setIsInWatchlist(true)
+    } catch (error) {
+      // Error handling
+      console.log(error)
     }
   }
 
-  const handleRemoveFromWatchlist = async (e: React.MouseEvent) => {
+  const handleRemoveFeedback = async (e: React.MouseEvent, type: FeedbackTypes) => {
     e.preventDefault()
 
     if (!user) {
       return router.push('/sign-in')
     }
 
-    const url = ENV.SERVER_API_URL + `/feedback/star/${user?.id}/${movie?.id}`
-    const options = {
-      method: 'DELETE'
-    }
+    try {
+      const data = await removeFeedback(user.id, movie.id, type)
 
-    const res = await fetch(url, options)
-    const data = await res.json()
-
-    if (data?.result) {
-      setUser({ ...user, watchlist: data?.watchlist } as User)
-      setIsInWatchlist(false)
+      if (data?.RowAffected === 1) {
+        switch (type) {
+          case FeedbackTypes.Watchlist:
+            setIsInWatchlist(false)
+            break
+          case FeedbackTypes.Like:
+            setIsLiked(false)
+            break
+          case FeedbackTypes.Dislike:
+            setIsDisliked(false)
+            break
+        }
+      }
+    } catch (error) {
+      // Error handling
+      console.log(error)
     }
   }
 
   const loadInitialState = async () => {
-    if (user?.watchlist?.find((id) => id === movie.id.toString())) {
-      setIsInWatchlist(true)
+    if (!user) {
+      return
+    }
+
+    try {
+      const data = await getMovieFeedback(user.id, movie.id)
+
+      if (data) {
+        setIsInWatchlist(data.includes(FeedbackTypes.Watchlist))
+        setIsLiked(data.includes(FeedbackTypes.Like))
+        setIsDisliked(data.includes(FeedbackTypes.Dislike))
+      }
+    } catch (error) {
+      // Error handling
+      console.log(error)
     }
   }
 
@@ -118,14 +129,18 @@ export default function MovieCard({ movie }: MovieCardProps) {
         <span className="text-white/60 text-sm mb-4">{getMovieYear(movie.release_date)}</span>
         <p className="font-normal text-sm text-white/50 mb-5 line-clamp-5">{movie.overview}</p>
 
-        {/* Add to Watchlist */}
+        {/* Watchlist */}
         <IconButton
           Icon={isInWatchlist ? AiFillHeart : AiOutlineHeart}
           text={isInWatchlist ? 'Remove from Watchlist' : 'Add to Watchlist'}
           iconSize={22}
           textSize="sm"
           className="mb-5"
-          onClick={isInWatchlist ? handleRemoveFromWatchlist : handleAddToWatchlist}
+          onClick={
+            isInWatchlist
+              ? (e) => handleRemoveFeedback(e, FeedbackTypes.Watchlist)
+              : (e) => handleAddFeedback(e, FeedbackTypes.Watchlist)
+          }
         />
 
         {/* Like/Dislike */}
@@ -133,16 +148,26 @@ export default function MovieCard({ movie }: MovieCardProps) {
           <p className="text-sm text-white/60">How would you rate this movie?</p>
           <div className="flex items-center gap-4">
             <IconButton
-              Icon={AiOutlineLike}
+              Icon={isLiked ? AiFillLike : AiOutlineLike}
               text="Like"
               iconSize={20}
               textSize="sm"
+              onClick={
+                isLiked
+                  ? (e) => handleRemoveFeedback(e, FeedbackTypes.Like)
+                  : (e) => handleAddFeedback(e, FeedbackTypes.Like)
+              }
             />
             <IconButton
-              Icon={AiOutlineDislike}
+              Icon={isDisliked ? AiFillDislike : AiOutlineDislike}
               text="Dislike"
               iconSize={20}
               textSize="sm"
+              onClick={
+                isDisliked
+                  ? (e) => handleRemoveFeedback(e, FeedbackTypes.Dislike)
+                  : (e) => handleAddFeedback(e, FeedbackTypes.Dislike)
+              }
             />
           </div>
         </div>

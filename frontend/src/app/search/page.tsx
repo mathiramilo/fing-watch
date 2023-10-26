@@ -2,10 +2,10 @@
 
 import { useEffect, useState } from 'react'
 
-import { ENV } from '@/config'
-import { IMoviesListItem, ISearchResults } from '@/types'
+import { IMoviesListItem } from '@/types'
 
 import { Footer, GenresSlider, MoviesGrid, SearchBar } from '@/components'
+import { getPopularMovies, searchMovies } from '@/services/movies'
 
 export default function SearchPage() {
   const [searchResults, setSearchResults] = useState<IMoviesListItem[] | null>(null)
@@ -21,44 +21,26 @@ export default function SearchPage() {
 
   const fetchSearchResults = async (inputValue: string) => {
     try {
-      const url = ENV.SERVER_API_URL + '/movies?per_page=18&q=' + inputValue
-
-      const options = {
-        method: 'GET',
-        headers: {
-          accept: 'application/json'
-        }
-      }
-
-      const res = await fetch(url, options)
-      const data: ISearchResults = await res.json()
-
-      const hits: IMoviesListItem[] = data.hits.map((hit) => hit.document)
-
-      setSearchResults(hits)
+      const data = await searchMovies(inputValue, 18)
+      setSearchResults(data)
     } catch (error) {
+      // Error handling
       console.log(error)
     }
   }
 
-  const getTrendingSearches = async () => {
-    const url = ENV.SERVER_API_URL + '/movies/popular?n=18'
-
-    const options = {
-      method: 'GET',
-      headers: {
-        accept: 'application/json'
-      }
+  const fetchTrendingSearches = async () => {
+    try {
+      const data = await getPopularMovies(18)
+      setTrendingSearches(data)
+    } catch (error) {
+      // Error handling
+      console.log(error)
     }
-
-    const res = await fetch(url, options)
-    const data = await res.json()
-
-    setTrendingSearches(data as IMoviesListItem[])
   }
 
   useEffect(() => {
-    getTrendingSearches()
+    fetchTrendingSearches()
   }, [])
 
   return (

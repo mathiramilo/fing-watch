@@ -3,10 +3,9 @@
 import { useState, useEffect } from 'react'
 import { useSearchParams } from 'next/navigation'
 
-import { ENV } from '@/config'
-import { IMoviesListItem } from '@/types'
+import { IMoviesListItem, RecommenderTypes } from '@/types.d'
 import { prettifyGenre } from '@/utils/movies'
-
+import { getLatestMovies, getPopularMovies, getRecommendedMovies } from '@/services/movies'
 import { useAuth } from '@/hooks/useAuth'
 
 import { MoviesSlider, Footer } from '@/components'
@@ -23,59 +22,42 @@ export default function GenrePage({ params }: { params: { id: string } }) {
 
   const { user } = useAuth()
 
-  const getRecommendedMovies = async (userId: string) => {
-    const url = ENV.SERVER_API_URL + `/recommend/${userId}/item_based/${genreId}?n=18`
-
-    const options = {
-      method: 'GET',
-      headers: {
-        accept: 'application/json'
-      }
+  const fetchRecommendedMovies = async (userId: string) => {
+    try {
+      const data = await getRecommendedMovies(userId, RecommenderTypes.ItemBased, 18, genreId)
+      setRecommendedMovies(data)
+    } catch (error) {
+      // Error handling
+      console.log(error)
     }
-
-    const res = await fetch(url, options)
-    const data = await res.json()
-
-    setRecommendedMovies(data as IMoviesListItem[])
   }
 
-  const getPopularMovies = async () => {
-    const url = ENV.SERVER_API_URL + `/movies/popular/${genreId}?n=18`
-
-    const options = {
-      method: 'GET',
-      headers: {
-        accept: 'application/json'
-      }
+  const fetchPopularMovies = async () => {
+    try {
+      const data = await getPopularMovies(18, genreId)
+      setPopularMovies(data)
+    } catch (error) {
+      // Error handling
+      console.log(error)
     }
-
-    const res = await fetch(url, options)
-    const data = await res.json()
-
-    setPopularMovies(data as IMoviesListItem[])
   }
 
-  const getLatestMovies = async () => {
-    const url = ENV.SERVER_API_URL + `/movies/latest/${genreId}?n=18`
-    const options = {
-      method: 'GET',
-      headers: {
-        accept: 'application/json'
-      }
+  const fetchLatestMovies = async () => {
+    try {
+      const data = await getLatestMovies(18, genreId)
+      setLatestMovies(data)
+    } catch (error) {
+      // Error handling
+      console.log(error)
     }
-
-    const res = await fetch(url, options)
-    const data = await res.json()
-
-    setLatestMovies(data as IMoviesListItem[])
   }
 
   useEffect(() => {
     if (user) {
-      getRecommendedMovies(user.id)
+      fetchRecommendedMovies(user.id)
     }
-    getPopularMovies()
-    getLatestMovies()
+    fetchPopularMovies()
+    fetchLatestMovies()
   }, [genreId, user]) // eslint-disable-line react-hooks/exhaustive-deps
 
   return (
