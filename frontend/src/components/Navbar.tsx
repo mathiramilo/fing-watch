@@ -2,7 +2,6 @@
 
 import { useState, useEffect, useRef } from 'react'
 
-import Image from 'next/image'
 import Link from 'next/link'
 
 import { BiSearch, BiUserCircle } from 'react-icons/bi'
@@ -87,11 +86,10 @@ export default function Navbar() {
             href="/"
             className="absolute left-[50%] translate-x-[-50%] hidden md:block"
           >
-            <Image
+            <img
               src="/logo.png"
               alt="FingWatch Logo"
               width={190}
-              height={190}
             />
           </Link>
 
