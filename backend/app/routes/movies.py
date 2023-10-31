@@ -59,10 +59,9 @@ def query():
     url = f"{os.environ['TYPESENSE']}/collections/movies/documents/search"
     params = {
         "q": request.args.get("q"),
-        "per_page": request.args.get("per_page", 10),
-        "query_by": "title,overview,keywords",
-        "prioritize_token_position": "true",
-        "query_by_weights": "64,16,4",
+        "per_page": request.args.get("per_page", 20),
+        "query_by": "title,keywords",
+        "query_by_weights": "64,4",
         "exclude_fields": "watch_providers,keywords",
     }
     headers = {"X-TYPESENSE-API-KEY": os.environ["TYPESENSE_KEY"]}
