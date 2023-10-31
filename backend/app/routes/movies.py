@@ -60,8 +60,12 @@ def query():
     params = {
         "q": request.args.get("q"),
         "per_page": request.args.get("per_page", 20),
-        "query_by": "title,keywords",
-        "query_by_weights": "64,4",
+        "query_by": "title,overview,keywords",
+        "query_by_weights": "64,16,4",
+        "text_match_type": "max_weight",
+        "prefix": "true,false,false",
+        "highlight_full_fields": "keywords",
+        "exhaustive_search": "true",
         "exclude_fields": "watch_providers,keywords",
     }
     headers = {"X-TYPESENSE-API-KEY": os.environ["TYPESENSE_KEY"]}
