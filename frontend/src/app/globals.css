@@ -8,7 +8,7 @@ body {
 
 /* Custom CSS */
 .bg-gradient {
-  background-image: url(/images/background-2.jpg);
+  background-image: url(/background.jpg);
   background-size: cover;
   background-repeat: no-repeat;
   background-position: center;

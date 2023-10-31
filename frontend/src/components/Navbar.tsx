@@ -88,7 +88,7 @@ export default function Navbar() {
             className="absolute left-[50%] translate-x-[-50%] hidden md:block"
           >
             <Image
-              src="/images/logo.png"
+              src="/logo.png"
               alt="FingWatch Logo"
               width={190}
               height={190}
