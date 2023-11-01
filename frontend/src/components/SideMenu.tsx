@@ -4,12 +4,16 @@ import { IoMdClose } from 'react-icons/io'
 
 import { Divider } from '@mui/material'
 
+import { useAuth } from '@/hooks/useAuth'
+
 interface SideMenuProps {
   open: boolean
   setOpen: (open: boolean) => void
 }
 
 export default function SideMenu({ open, setOpen }: SideMenuProps) {
+  const { user } = useAuth()
+
   const handleClose = (e: React.MouseEvent<HTMLDivElement>) => {
     if (e.target === e.currentTarget) setOpen(false)
     return
@@ -58,24 +62,24 @@ export default function SideMenu({ open, setOpen }: SideMenuProps) {
           Series
         </Link>
         <Link
+          href="/search"
+          onClick={() => setOpen(false)}
+          className="text-lg text-white/80 hover:text-white transition-colors"
+        >
+          Search Movies
+        </Link>
+        <Link
           href="/"
           onClick={() => setOpen(false)}
           className="text-lg text-white/80 hover:text-white transition-colors"
         >
           Trending Now
         </Link>
-        <Link
-          href="/"
-          onClick={() => setOpen(false)}
-          className="text-lg text-white/80 hover:text-white transition-colors"
-        >
-          Coming Soon
-        </Link>
 
         <Divider color="#393939" />
 
         <Link
-          href="/profile"
+          href={user ? '/profile' : '/sign-in'}
           onClick={() => setOpen(false)}
           className="text-lg text-white/80 hover:text-white transition-colors"
         >

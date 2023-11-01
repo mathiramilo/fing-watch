@@ -6,10 +6,12 @@ import Image from 'next/image'
 
 import { AiFillHeart, AiOutlineHeart, AiFillLike, AiOutlineLike, AiFillDislike, AiOutlineDislike } from 'react-icons/ai'
 
-import { ENV } from '@/config'
 import { IMovieDetails, IMovieProviders, FeedbackTypes } from '@/types.d'
 import { getMovieAge, getMovieDuration, getMovieYear, getMovieImageUrl } from '@/utils/movies'
+
 import { addFeedback, removeFeedback, getMovieFeedback } from '@/services/feedback'
+import { getMovieDetails, getSimilarMovies } from '@/services/movies'
+
 import { useAuth } from '@/hooks/useAuth'
 
 import { CustomRating, IconButton, MoviesSlider, Footer } from '@/components'
@@ -27,37 +29,25 @@ export default function MoviePage({ params }: { params: { id: string } }) {
 
   const router = useRouter()
 
-  const getMovieDetails = async () => {
-    const url = ENV.SERVER_API_URL + `/movies/${params.id}`
-
-    const options = {
-      method: 'GET',
-      headers: {
-        accept: 'application/json'
-      }
+  const fetchMovieDetails = async () => {
+    try {
+      const data = await getMovieDetails(params.id)
+      setMovie(data as IMovieDetails)
+      setProviders(data?.watch_providers)
+    } catch (error) {
+      // Error handling
+      console.log(error)
     }
-
-    const res = await fetch(url, options)
-    const data = await res.json()
-
-    setMovie(data as IMovieDetails)
-    setProviders(data?.watch_providers)
   }
 
-  const getSimilarMovies = async () => {
-    const url = ENV.SERVER_API_URL + `/movies/neighbors/${params.id}?n=18`
-
-    const options = {
-      method: 'GET',
-      headers: {
-        accept: 'application/json'
-      }
+  const fetchSimilarMovies = async () => {
+    try {
+      const data = await getSimilarMovies(params.id, 18)
+      setSimilar(data)
+    } catch (error) {
+      // Error handling
+      console.log(error)
     }
-
-    const res = await fetch(url, options)
-    const data = await res.json()
-
-    setSimilar(data as IMovieDetails[])
   }
 
   const handleAddFeedback = async (e: React.MouseEvent, type: FeedbackTypes) => {
@@ -118,7 +108,7 @@ export default function MoviePage({ params }: { params: { id: string } }) {
     }
   }
 
-  const loadInitialState = async () => {
+  const fetchInitialState = async () => {
     if (!user) {
       return
     }
@@ -138,21 +128,23 @@ export default function MoviePage({ params }: { params: { id: string } }) {
   }
 
   useEffect(() => {
-    getMovieDetails()
-    getSimilarMovies()
-    loadInitialState()
+    fetchMovieDetails()
+    fetchSimilarMovies()
+    fetchInitialState()
   }, [params.id]) // eslint-disable-line react-hooks/exhaustive-deps
 
   return (
     <main className="">
       <section
-        className={`relative z-0 flex flex-end min-h-[80vh] overflow-hidden ${similar?.length === 0 && 'min-h-[99vh]'}`}
+        className={`relative z-0 flex flex-end min-h-[100vh] sm:min-h-[80vh] overflow-hidden ${
+          similar?.length === 0 && 'min-h-[99vh]'
+        }`}
       >
         {/* Top Shadow */}
         <div className="absolute z-10 w-full h-12 top-0 left-0 bg-black/60 shadow-[0_10px_60px_50px_rgba(0,0,0,0.61)]"></div>
 
         {/* Bottom Shadow */}
-        <div className="absolute z-10 w-full h-32 bottom-0 left-0 bg-black shadow-[0_-10px_120px_120px_rgba(0,0,0)]"></div>
+        <div className="absolute z-10 w-full h-64 sm:h-32 bottom-0 left-0 bg-black shadow-[0_-10px_120px_120px_rgba(0,0,0)]"></div>
 
         {/* Movie Backdrop Banner */}
         <Image

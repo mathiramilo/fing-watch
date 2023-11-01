@@ -65,6 +65,6 @@ const responsive = {
     breakpoint: { max: 552, min: 275 },
     items: 1,
     slidesToSlide: 1,
-    partialVisibilityGutter: 32
+    partialVisibilityGutter: 128
   }
 }

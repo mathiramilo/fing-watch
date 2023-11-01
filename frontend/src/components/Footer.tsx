@@ -1,9 +1,107 @@
+import Link from 'next/link'
+
+const developers = [
+  {
+    name: 'Mathias Ramilo',
+    linkedin: 'https://www.linkedin.com/in/mathias-ramilo/'
+  },
+  {
+    name: 'Agustin Nuñez',
+    linkedin: 'https://www.linkedin.com/in/agustin-nunez/'
+  },
+  {
+    name: 'Roman Alvarez',
+    linkedin: 'https://www.linkedin.com/in/roman-alvarez/'
+  },
+  {
+    name: 'Nicolas Adrien',
+    linkedin: 'https://www.linkedin.com/in/nicolas-adrien/'
+  }
+]
+
 export default function Footer() {
   return (
-    <section className="w-full flex items-center justify-center">
-      <div className="w-full flex items-center justify-center px-6 py-6">
-        <p className="text-sm font-bold text-white/60">All rights reserved. © FingWatch 2023 ™</p>
-      </div>
-    </section>
+    <footer className="relative w-full flex items-center">
+      {/* Shadow */}
+      <div className="absolute -z-[10] w-full h-64 sm:h-32 bottom-0 left-0 bg-black shadow-[0_-10px_120px_450px_rgba(0,0,0)] xl:shadow-[0_-10px_120px_260px_rgba(0,0,0)]"></div>
+
+      {/* Footer */}
+      <section className="z-10 w-full flex flex-col py-8 pt-32">
+        <div className="w-full flex flex-col xl:flex-row xl:items-start gap-12 xl:gap-32 2xl:gap-48 3xl:gap-80 4xl:gap-96">
+          {/* FingWatch and Fing logo */}
+          <section className="flex flex-col items-start justify-center gap-4">
+            <img
+              src="/logo.png"
+              alt="FingWatch Logo"
+              width={190}
+            />
+            <img
+              src="/logo-fing.png"
+              alt="Fing logo"
+              width={125}
+            />
+          </section>
+
+          {/* Developers */}
+          <section>
+            <h4 className="text-white/80 font-bold mb-6 uppercase">Developers</h4>
+            <div className="grid grid-cols-2 xl:grid-cols-1 gap-y-3">
+              {developers.map((developer, index) => (
+                <Link
+                  key={index}
+                  href={developer.linkedin}
+                  target="_blank"
+                  className="text-white/60 hover:text-white/80 transition-colors"
+                >
+                  {developer.name}
+                </Link>
+              ))}
+            </div>
+          </section>
+
+          {/* Project */}
+          <section>
+            <h4 className="text-white/80 font-bold mb-6 uppercase">Project</h4>
+
+            <div className="grid grid-cols-2 xl:grid-cols-1 gap-y-3">
+              <Link
+                href="#"
+                className="text-white/60 hover:text-white/80 transition-colors"
+              >
+                Github
+              </Link>
+              <Link
+                href="#"
+                className="text-white/60 hover:text-white/80 transition-colors"
+              >
+                Demo
+              </Link>
+              <Link
+                href="#"
+                className="text-white/60 hover:text-white/80 transition-colors"
+              >
+                Docs
+              </Link>
+            </div>
+          </section>
+
+          {/* Information */}
+          <section className="xl:max-w-md 2xl:max-w-lg">
+            <h4 className="text-white/80 font-bold mb-6 uppercase">Information</h4>
+
+            <p className="text-white/60 font-light">
+              It is a long established fact that a reader will be distracted by the readable content of a page when
+              looking at its layout. The point of using Lorem Ipsum is that it has a more-or-less normal distribution of
+              letters, as opposed to using Content here, content here, making it look like readable English.
+            </p>
+          </section>
+        </div>
+
+        {/* Copyright */}
+        <div className="w-full border-t border-t-white/20 mt-12 pt-3">
+          <p className="text-white/50 text-xs text-start">&copy; FingWatch 2023. All Rights Reserved</p>
+        </div>
+      </section>
+    </footer>
   )
 }

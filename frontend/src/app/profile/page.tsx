@@ -35,11 +35,11 @@ export default function ProfilePage() {
 
   useEffect(() => {
     if (!user) {
-      router.back()
+      return router.back()
     }
 
     fetchWatchlist()
-  }, []) // eslint-disable-line react-hooks/exhaustive-deps
+  }, [user]) // eslint-disable-line react-hooks/exhaustive-deps
 
   return (
     <main className="w-[90%] mx-auto sm:w-full sm:px-12 pt-32">

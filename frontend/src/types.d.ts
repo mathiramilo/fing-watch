@@ -153,3 +153,8 @@ export enum RecommenderTypes {
   UserBased = 'user_based',
   ItemBased = 'item_based'
 }
+
+type TRecommendedBecause = Array<{
+  key: string
+  movies: Array<IMoviesListItem>
+}>

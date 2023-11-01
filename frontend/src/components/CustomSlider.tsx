@@ -57,7 +57,7 @@ const CustomPrevArrow = ({ currentSlide, onClick }: any) => {
       onClick={onClick}
       className={`${
         isDisabled && 'opacity-0 pointer-events-none'
-      } group carousel-arrow-left absolute left-0 top-0 z-50 w-16 h-full flex items-center justify-center cursor-pointer bg-black/5 shadow-[5px_0_12px_5px_rgba(0,0,0,0.05)] hover:bg-black/25 transition-all duration-300`}
+      } hidden pointer-events-none sm:flex sm:pointer-events-auto group carousel-arrow-left absolute left-0 top-0 z-50 w-16 h-full items-center justify-center cursor-pointer bg-black/5 shadow-[5px_0_12px_5px_rgba(0,0,0,0.05)] hover:bg-black/25 transition-all duration-300`}
     >
       <IoIosArrowBack
         size={32}
@@ -75,7 +75,7 @@ const CustomNextArrow = ({ currentSlide, slideCount, onClick }: any) => {
       onClick={onClick}
       className={`${
         isDisabled && 'opacity-0 pointer-events-none'
-      } group carousel-arrow-right absolute right-0 top-0 w-16 h-full flex items-center justify-center cursor-pointer bg-black/5 shadow-[-5px_0_12px_5px_rgba(0,0,0,0.05)] hover:bg-black/25 transition-all duration-300`}
+      } hidden pointer-events-none sm:flex sm:pointer-events-auto group carousel-arrow-right absolute right-0 top-0 w-16 h-full items-center justify-center cursor-pointer bg-black/5 shadow-[-5px_0_12px_5px_rgba(0,0,0,0.05)] hover:bg-black/25 transition-all duration-300`}
     >
       <IoIosArrowForward
         size={32}

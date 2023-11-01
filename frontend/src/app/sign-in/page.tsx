@@ -57,7 +57,7 @@ export default function SignInPage() {
     <main className="w-[90%] mx-auto sm:w-full sm:px-12 pt-48">
       <h3 className="text-3xl font-bold text-center text-white/90 mb-16">Sign In</h3>
 
-      <section className="w-full max-w-4xl mx-auto bg-black/40 backdrop-blur-3xl p-10 rounded-md mb-20">
+      <section className="w-full max-w-4xl mx-auto bg-black/40 backdrop-blur-3xl p-10 rounded-md mb-40">
         <p className="text-white/80 mb-8">Do you have a FingWatch account?</p>
 
         {/* Sign In with Google */}

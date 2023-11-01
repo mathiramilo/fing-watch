@@ -35,7 +35,7 @@ const CustomLeftArrow = ({ onClick }: any) => {
   return (
     <button
       onClick={() => onClick()}
-      className="group carousel-arrow-left absolute left-0 w-16 h-full flex items-center justify-center cursor-pointer bg-black/5 shadow-[5px_0_12px_5px_rgba(0,0,0,0.05)] hover:bg-black/25 transition-all duration-300"
+      className="hidden pointer-events-none sm:flex sm:pointer-events-auto group carousel-arrow-left absolute left-0 w-16 h-full items-center justify-center cursor-pointer bg-black/5 shadow-[5px_0_12px_5px_rgba(0,0,0,0.05)] hover:bg-black/25 transition-all duration-300"
     >
       <IoIosArrowBack
         size={32}
@@ -49,7 +49,7 @@ const CustomRightArrow = ({ onClick }: any) => {
   return (
     <button
       onClick={() => onClick()}
-      className="group carousel-arrow-right absolute right-0 w-16 h-full flex items-center justify-center cursor-pointer bg-black/5 shadow-[-5px_0_12px_5px_rgba(0,0,0,0.05)] hover:bg-black/25 transition-all duration-300"
+      className="hidden pointer-events-none sm:flex sm:pointer-events-auto group carousel-arrow-right absolute right-0 w-16 h-full items-center justify-center cursor-pointer bg-black/5 shadow-[-5px_0_12px_5px_rgba(0,0,0,0.05)] hover:bg-black/25 transition-all duration-300"
     >
       <IoIosArrowForward
         size={32}

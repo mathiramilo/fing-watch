@@ -1,18 +1,11 @@
 import { ENV } from '@/config'
-import { IMoviesListItem, ISearchResults, RecommenderTypes } from '@/types'
+import { IMovieDetails, IMoviesListItem, ISearchResults, RecommenderTypes } from '@/types'
 
 export const searchMovies = async (query: string, perPage = 10): Promise<IMoviesListItem[]> => {
   try {
     const url = ENV.SERVER_API_URL + `/movies?per_page=${perPage}&q=${query}`
 
-    const options = {
-      method: 'GET',
-      headers: {
-        accept: 'application/json'
-      }
-    }
-
-    const res = await fetch(url, options)
+    const res = await fetch(url)
     const data: ISearchResults = await res.json()
 
     const hits = data.hits.map((hit) => hit.document)
@@ -41,18 +34,28 @@ export const getRecommendedMovies = async (
   }
 }
 
+export const getSimilarMovies = async (
+  movieId: string | number,
+  perPage = 10,
+  genre: string | null = null
+): Promise<IMovieDetails[]> => {
+  try {
+    const url = ENV.SERVER_API_URL + `/movies/neighbors/${movieId}${genre ? '/' + genre : ''}?n=${perPage}`
+
+    const res = await fetch(url)
+    const data = await res.json()
+
+    return data
+  } catch (error) {
+    throw new Error((error as Error).message)
+  }
+}
+
 export const getPopularMovies = async (perPage = 10, genre: string | null = null): Promise<IMoviesListItem[]> => {
   try {
     const url = ENV.SERVER_API_URL + `/movies/popular${genre ? '/' + genre : ''}?n=${perPage}`
 
-    const options = {
-      method: 'GET',
-      headers: {
-        accept: 'application/json'
-      }
-    }
-
-    const res = await fetch(url, options)
+    const res = await fetch(url)
     const data = await res.json()
 
     return data
@@ -65,14 +68,20 @@ export const getLatestMovies = async (perPage = 10, genre: string | null = null)
   try {
     const url = ENV.SERVER_API_URL + `/movies/latest${genre ? '/' + genre : ''}?n=${perPage}`
 
-    const options = {
-      method: 'GET',
-      headers: {
-        accept: 'application/json'
-      }
-    }
+    const res = await fetch(url)
+    const data = await res.json()
 
-    const res = await fetch(url, options)
+    return data
+  } catch (error) {
+    throw new Error((error as Error).message)
+  }
+}
+
+export const getMovieDetails = async (movieId: string | number): Promise<IMovieDetails> => {
+  try {
+    const url = ENV.SERVER_API_URL + `/movies/${movieId}`
+
+    const res = await fetch(url)
     const data = await res.json()
 
     return data
