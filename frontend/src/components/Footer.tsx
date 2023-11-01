@@ -90,9 +90,10 @@ export default function Footer() {
             <h4 className="text-white/80 font-bold mb-6 uppercase">Information</h4>
 
             <p className="text-white/60">
-              It is a long established fact that a reader will be distracted by the readable content of a page when
-              looking at its layout. The point of using Lorem Ipsum is that it has a more-or-less normal distribution of
-              letters, as opposed to using Content here, content here, making it look like readable English.
+              FingWatch is a movie platform where you can discover the most popular and recent movies or search for the
+              ones you desire. Additionally, for each movie, you can find a wealth of information such as the release
+              year, duration, language, streaming platform availability, and similar movies. Finally, users have the
+              opportunity to add movies to their watchlist and express their preferences by liking or disliking movies.
             </p>
           </section>
         </div>
