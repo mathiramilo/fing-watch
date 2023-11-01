@@ -1,5 +1,5 @@
 // URLs
-export const TMDB_IMAGE_BASE_URL = 'http://localhost/movies' //'https://image.tmdb.org/t/p/original/' // TMDB images base url
+export const TMDB_IMAGE_BASE_URL = 'http://nginx/movies' //'https://image.tmdb.org/t/p/original/' // TMDB images base url
 export const TMDB_API_URL = 'https://api.themoviedb.org/3' // TMDB API base url
 
 // Environment variables
