@@ -6,8 +6,8 @@ const developers = [
     linkedin: 'https://www.linkedin.com/in/mathias-ramilo/'
   },
   {
-    name: 'Agustin Nuñez',
-    linkedin: 'https://www.linkedin.com/in/agustin-nunez/'
+    name: 'Agustín Núñez',
+    linkedin: 'https://www.linkedin.com/in/aguunu/'
   },
   {
     name: 'Roman Alvarez',
