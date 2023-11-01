@@ -89,7 +89,7 @@ export default function Footer() {
           <section className="xl:max-w-md 2xl:max-w-lg">
             <h4 className="text-white/80 font-bold mb-6 uppercase">Information</h4>
 
-            <p className="text-white/60 font-light">
+            <p className="text-white/60">
               It is a long established fact that a reader will be distracted by the readable content of a page when
               looking at its layout. The point of using Lorem Ipsum is that it has a more-or-less normal distribution of
               letters, as opposed to using Content here, content here, making it look like readable English.
