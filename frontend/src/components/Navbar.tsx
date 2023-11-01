@@ -1,6 +1,7 @@
 'use client'
 
 import { useState, useEffect, useRef } from 'react'
+import { useRouter } from 'next/navigation'
 
 import Link from 'next/link'
 
@@ -21,11 +22,14 @@ export default function Navbar() {
 
   const profileMenuRef = useRef<HTMLDivElement>(null)
 
+  const router = useRouter()
+
   const handleScrollY = () => setScrollY(window.scrollY)
 
   const handleSignOut = () => {
     setToken(null)
     setProfileOpen(false)
+    router.refresh()
   }
 
   useEffect(() => {
