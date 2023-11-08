@@ -11,7 +11,8 @@ import { GenresSlider, MoviesSlider, Footer } from '@/components'
 import { getUserFeedback } from '@/services/feedback'
 
 export default function HomePage() {
-  const [recommendedMovies, setRecommendedMovies] = useState<IMoviesListItem[]>([])
+  const [recommendedMoviesContent, setRecommendedMoviesContent] = useState<IMoviesListItem[]>([])
+  const [recommendedMoviesCollaborative, setRecommendedMoviesCollaborative] = useState<IMoviesListItem[]>([])
   const [popularMovies, setPopularMovies] = useState<IMoviesListItem[]>([])
   const [latestMovies, setLatestMovies] = useState<IMoviesListItem[]>([])
   const [recommendedBecauseLiked, setRecommendedBecauseLiked] = useState<TRecommendedBecause>([])
@@ -21,8 +22,11 @@ export default function HomePage() {
 
   const fetchRecommendedMovies = async (userId: string) => {
     try {
-      const data = await getRecommendedMovies(userId, RecommenderTypes.ItemBased, 18)
-      setRecommendedMovies(data)
+      const itemBasedData = await getRecommendedMovies(userId, RecommenderTypes.ItemBased, 18)
+      const collaborativeData = await getRecommendedMovies(userId, RecommenderTypes.Collaborative, 18)
+
+      setRecommendedMoviesContent(itemBasedData)
+      setRecommendedMoviesCollaborative(collaborativeData)
     } catch (error) {
       // Error handling
       console.log(error)
@@ -109,7 +113,12 @@ export default function HomePage() {
 
       <MoviesSlider
         title="Just For You"
-        movies={recommendedMovies}
+        movies={recommendedMoviesContent}
+        className="my-12"
+      />
+      <MoviesSlider
+        title="Other Users Also Liked"
+        movies={recommendedMoviesCollaborative}
         className="my-12"
       />
       <MoviesSlider
