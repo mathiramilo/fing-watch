@@ -12,7 +12,8 @@ import { MoviesSlider, Footer } from '@/components'
 import { getUserFeedback } from '@/services/feedback'
 
 export default function GenrePage({ params }: { params: { id: string } }) {
-  const [recommendedMovies, setRecommendedMovies] = useState<IMoviesListItem[]>([])
+  const [recommendedMoviesContent, setRecommendedMoviesContent] = useState<IMoviesListItem[]>([])
+  const [recommendedMoviesCollaborative, setRecommendedMoviesCollaborative] = useState<IMoviesListItem[]>([])
   const [popularMovies, setPopularMovies] = useState<IMoviesListItem[]>([])
   const [latestMovies, setLatestMovies] = useState<IMoviesListItem[]>([])
   const [recommendedBecauseLiked, setRecommendedBecauseLiked] = useState<TRecommendedBecause>([])
@@ -27,8 +28,11 @@ export default function GenrePage({ params }: { params: { id: string } }) {
 
   const fetchRecommendedMovies = async (userId: string) => {
     try {
-      const data = await getRecommendedMovies(userId, RecommenderTypes.ItemBased, 18, genreId)
-      setRecommendedMovies(data)
+      const itemBasedData = await getRecommendedMovies(userId, RecommenderTypes.ItemBased, 18, genreId)
+      const collaborativeData = await getRecommendedMovies(userId, RecommenderTypes.Collaborative, 18, genreId)
+
+      setRecommendedMoviesContent(itemBasedData)
+      setRecommendedMoviesCollaborative(collaborativeData)
     } catch (error) {
       // Error handling
       console.log(error)
@@ -120,7 +124,12 @@ export default function GenrePage({ params }: { params: { id: string } }) {
 
       <MoviesSlider
         title="Just for You"
-        movies={recommendedMovies}
+        movies={recommendedMoviesContent}
+        className="my-12"
+      />
+      <MoviesSlider
+        title="Other Users Also Liked"
+        movies={recommendedMoviesCollaborative}
         className="my-12"
       />
       <MoviesSlider

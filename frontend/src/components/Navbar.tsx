@@ -14,7 +14,7 @@ import SideMenu from './SideMenu'
 import { Divider } from '@mui/material'
 
 export default function Navbar() {
-  const { user, setToken } = useAuth()
+  const { user, setUser, setToken } = useAuth()
 
   const [menuOpen, setMenuOpen] = useState(false)
   const [profileOpen, setProfileOpen] = useState(false)
@@ -28,8 +28,9 @@ export default function Navbar() {
 
   const handleSignOut = () => {
     setToken(null)
+    setUser(null)
     setProfileOpen(false)
-    router.refresh()
+    router.push('/sign-in')
   }
 
   useEffect(() => {
