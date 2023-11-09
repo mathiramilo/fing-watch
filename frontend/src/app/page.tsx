@@ -23,7 +23,7 @@ export default function HomePage() {
   const fetchRecommendedMovies = async (userId: string) => {
     try {
       const itemBasedData = await getRecommendedMovies(userId, RecommenderTypes.ItemBased, 18)
-      const collaborativeData = await getRecommendedMovies(userId, RecommenderTypes.Collaborative, 18)
+      const collaborativeData = await getRecommendedMovies(userId, RecommenderTypes.UserBased, 18)
 
       setRecommendedMoviesContent(itemBasedData)
       setRecommendedMoviesCollaborative(collaborativeData)

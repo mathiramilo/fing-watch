@@ -29,7 +29,7 @@ export default function GenrePage({ params }: { params: { id: string } }) {
   const fetchRecommendedMovies = async (userId: string) => {
     try {
       const itemBasedData = await getRecommendedMovies(userId, RecommenderTypes.ItemBased, 18, genreId)
-      const collaborativeData = await getRecommendedMovies(userId, RecommenderTypes.Collaborative, 18, genreId)
+      const collaborativeData = await getRecommendedMovies(userId, RecommenderTypes.UserBased, 18, genreId)
 
       setRecommendedMoviesContent(itemBasedData)
       setRecommendedMoviesCollaborative(collaborativeData)
