@@ -1,5 +1,5 @@
-![logo](https://github.com/mathiramilo/fing-watch/assets/42822912/4e38d834-5458-4f2e-b22f-51a0b685e05a)
+![YT Preview](https://github.com/mathiramilo/fing-watch/assets/42822912/2d897bd6-d7e1-4dff-9441-44138ccccee2)
 
-## Fing Watch
+# Fing Watch
 
 Search for movies and get recommendations. Final project for the WebIR course of the University of the Republic UDELAR.
