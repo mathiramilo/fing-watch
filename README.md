@@ -1,4 +1,6 @@
-# FingWatch
+![ui-ux-design-2](https://github.com/mathiramilo/fing-watch/assets/42822912/9f1a3e5d-f28f-4790-84ec-3b2cc867f171)
+
+## FingWatch
 
 Search for movies and get recommendations. Final project for the WebIR course of the University of the Republic UDELAR.
 
