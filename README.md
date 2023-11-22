@@ -1,4 +1,4 @@
-[![FingWatch Demo](https://github.com/mathiramilo/fing-watch/assets/42822912/ab632c14-8866-4430-975a-46976aa1a529)](https://www.youtube.com/watch?v=oYsGTYXDveQ)
+https://github.com/mathiramilo/fing-watch/assets/42822912/f45a82d5-0d8a-493e-b090-93073bd209cc
 
 ## 1. Problem
 
