@@ -1,5 +1,9 @@
 https://github.com/mathiramilo/fing-watch/assets/42822912/f45a82d5-0d8a-493e-b090-93073bd209cc
 
+# FingWatch
+
+Search for movies and get recommendations. Final project for the WebIR course of the University of the Republic UDELAR. See the demo on ![YouTube](https://www.youtube.com/watch?v=oYsGTYXDveQ&t=4s).
+
 ## 1. Problem
 
 The world of cinematic entertainment offers an immense array of options, which can be overwhelming for movie enthusiasts seeking films that suit their personal tastes. Moreover, the lack of guidance often leads to an unsatisfactory viewing experience, where users may waste time and money on movies that don't truly interest them.
