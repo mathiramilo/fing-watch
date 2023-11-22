@@ -1,4 +1,4 @@
-[![FingWatch Demo](https://github.com/mathiramilo/fing-watch/assets/42822912/ab632c14-8866-4430-975a-46976aa1a529)](https://www.youtube.com/watch?v=oYsGTYXDveQ) "FingWatch Demo")
+[![FingWatch Demo](https://github.com/mathiramilo/fing-watch/assets/42822912/ab632c14-8866-4430-975a-46976aa1a529)](https://www.youtube.com/watch?v=oYsGTYXDveQ)
 
 ## 1. Problem
 
@@ -10,17 +10,17 @@ The overabundance of films, genres, actors, and directors, coupled with the abse
 
 Our solution is a web-based movie recommendation application that employs a personalized approach to help users discover films they truly enjoy. Here are the key aspects of our solution:
 
-1. `**Recommendation System:**` Based on user preferences, we recognize the need to create a recommendation system that relies on popular and recent movies. In addition to offering content-based recommendations, we incorporate user-based and history-based recommendations. This enables us to generate precise and personalized recommendations for our users.
+1. **`Recommendation System:`** Based on user preferences, we recognize the need to create a recommendation system that relies on popular and recent movies. In addition to offering content-based recommendations, we incorporate user-based and history-based recommendations. This enables us to generate precise and personalized recommendations for our users.
    
-2. `**Updated Database:**` A fundamental goal is to develop a mechanism that provides real-time information about new releases. This ensures the continuous updating of our database with the latest movies.
+2. **`Updated Database:`** A fundamental goal is to develop a mechanism that provides real-time information about new releases. This ensures the continuous updating of our database with the latest movies.
 
-3. `**Real-Time Updates:**` Our platform collects user feedback, allowing users to modify this feedback at any time through their favorites list. This enables us to continuously adapt our recommendations as user preferences evolve.
+3. **`Real-Time Updates:`** Our platform collects user feedback, allowing users to modify this feedback at any time through their favorites list. This enables us to continuously adapt our recommendations as user preferences evolve.
 
-4. `**Content Exploration:**` In addition to personalized recommendations, we provide users with the ability to explore movies either by genre or by similarities with a specific film.
+4. **`Content Exploration:`** In addition to personalized recommendations, we provide users with the ability to explore movies either by genre or by similarities with a specific film.
 
-5. `**Platform Availability:**` Along with movie information, our platform will show users on which streaming platforms the movie is available for viewing.
+5. **`Platform Availability:`** Along with movie information, our platform will show users on which streaming platforms the movie is available for viewing.
 
-6. `**Error Tolerance:**` When searching for a specific movie, a certain level of error tolerance will be accepted to enhance the search experience.
+6. **`Error Tolerance:`** When searching for a specific movie, a certain level of error tolerance will be accepted to enhance the search experience.
 
 ## 3. Architecture
 
