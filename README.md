@@ -1,8 +1,8 @@
-https://github.com/mathiramilo/fing-watch/assets/42822912/f45a82d5-0d8a-493e-b090-93073bd209cc
-
 # FingWatch
 
-Search for movies and get recommendations. Final project for the WebIR course of the University of the Republic UDELAR. See the demo on ![YouTube](https://www.youtube.com/watch?v=oYsGTYXDveQ&t=4s).
+Search for movies and get recommendations. Final project for the WebIR course of the University of the Republic UDELAR.
+
+https://github.com/mathiramilo/fing-watch/assets/42822912/f45a82d5-0d8a-493e-b090-93073bd209cc
 
 ## 1. Problem
 
