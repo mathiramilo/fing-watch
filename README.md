@@ -79,4 +79,4 @@ Last but not least, we think that social integration could be a significant enha
 
 ## 5. Conclusion
 
-The development of the "ngwatch" platform was highly enriching, as we successfully achieved the initially set objectives. Throughout the process, we explored and applied a variety of interesting technologies, with notable highlights being the Typesense search engine and the Gorse recommendation system. These tools not only allowed us to effectively implement the concepts learned throughout the course but also significantly enriched our understanding and vision of the topics covered in the course.
+The development of the "FingWatch" platform was highly enriching, as we successfully achieved the initially set objectives. Throughout the process, we explored and applied a variety of interesting technologies, with notable highlights being the Typesense search engine and the Gorse recommendation system. These tools not only allowed us to effectively implement the concepts learned throughout the course but also significantly enriched our understanding and vision of the topics covered in the course.
