@@ -2,7 +2,7 @@
 
 # FingWatch
 
-Search for movies and get recommendations. Final project for the WebIR course of the University of the Republic UDELAR.
+A movie platform enhanced by the Gorse recommender system service and integrated with the Typesense search engine. This dynamic system consistently refreshes its database with the most recent movies sourced from the TMDB API, ensuring users receive personalized recommendations aligned with their preferences. Final project for the WebIR course of the University of the Republic UDELAR.
 
 ## Demo
 
