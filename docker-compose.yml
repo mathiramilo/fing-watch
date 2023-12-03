@@ -13,8 +13,8 @@ services:
       - 27017:27017
     environment:
       MONGO_INITDB_DATABASE: data
-      MONGO_INITDB_ROOT_USERNAME: ${MONGO_INITDB_ROOT_USERNAME}
-      MONGO_INITDB_ROOT_PASSWORD: ${MONGO_INITDB_ROOT_PASSWORD}
+      MONGO_INITDB_ROOT_USERNAME: admin
+      MONGO_INITDB_ROOT_PASSWORD: admin
     volumes:
       - mongo_data:/data/db
 
@@ -28,7 +28,7 @@ services:
       # Use Redis as cache storage backend.
       GORSE_CACHE_STORE: redis://redis:6379
       # Use MongoDB as data storage backend.
-      GORSE_DATA_STORE: mongodb://${MONGO_INITDB_ROOT_USERNAME}:${MONGO_INITDB_ROOT_PASSWORD}@mongo:27017/gorse?authSource=admin
+      GORSE_DATA_STORE: mongodb://admin:admin@mongo:27017/gorse?authSource=admin
     command: >
       -c /etc/gorse/config.toml  --log-path /var/log/gorse/master.log  --cache-path /var/lib/gorse/master_cache.data
     volumes:
