@@ -68,7 +68,7 @@ services:
     ports:
       - 8108:8108
     environment:
-      TYPESENSE_API_KEY: xyz
+      TYPESENSE_API_KEY: 567260c1-2fde-4639-9c7d-217d6c12f6b1
       TYPESENSE_DATA_DIR: /data/typesense
       TYPESENSE_ENABLE_CORS: 'true'
     volumes:
